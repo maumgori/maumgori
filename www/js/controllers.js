@@ -56,11 +56,11 @@ angular.module('starter.controllers', [])
     var starArr = new Array(5);
     for(var i=0; i<5; i++){
       if((i+1) <= num){
-        starArr[i] = 'ion-ios7-star';
+        starArr[i] = 'ion-ios-star';
       } else if(((i+1) > num) && ((i) < num)){
-        starArr[i] = 'ion-ios7-star-half';
+        starArr[i] = 'ion-ios-star-half';
       } else {
-        starArr[i] = 'ion-ios7-star-outline';
+        starArr[i] = 'ion-ios-star-outline';
       }
     }
     return starArr;

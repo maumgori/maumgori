@@ -13,7 +13,7 @@
         {{expert.name}}
       </span>
       <span style='float:right;'>
-        <i ng-repeat="i in getStars(expert.eval_score) track by $index" class="icon {{i}}" style="color:orange;"></i>
+        <i ng-repeat="i in getStars(expert.eval_score) track by $index" class="{{i}}" style="color:orange;"></i>
         <span style="font-size:14px;">
         {{expert.eval_score}} / 5
         </span>

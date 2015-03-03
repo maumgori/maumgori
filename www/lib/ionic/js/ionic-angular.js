@@ -2245,7 +2245,7 @@ IonicModule
     },
 
     backButton: {
-      icon: 'ion-ios7-arrow-back',
+      icon: 'ion-ios-arrow-back',
       text: 'Back',
       previousTitleText: true
     },
@@ -10048,7 +10048,7 @@ IonicModule
  * <ion-radio ng-model="choice" ng-value="'B'">Choose B</ion-radio>
  * <ion-radio ng-model="choice" ng-value="'C'">Choose C</ion-radio>
  * ```
- * 
+ *
  * @param {string=} name The name of the radio input.
  * @param {expression=} value The value of the radio input.
  * @param {boolean=} disabled The state of the radio input.
@@ -10179,7 +10179,7 @@ IonicModule
     '</div>',
     compile: function($element, $attrs) {
       if (angular.isUndefined($attrs.pullingIcon)) {
-        $attrs.$set('pullingIcon', 'ion-ios7-arrow-down');
+        $attrs.$set('pullingIcon', 'ion-ios-arrow-down');
       }
       if (angular.isUndefined($attrs.refreshingIcon)) {
         $attrs.$set('refreshingIcon', 'ion-loading-d');
@@ -11180,15 +11180,15 @@ IonicModule
  * ```html
  * <ion-tabs class="tabs-positive tabs-icon-only">
  *
- *   <ion-tab title="Home" icon-on="ion-ios7-filing" icon-off="ion-ios7-filing-outline">
+ *   <ion-tab title="Home" icon-on="ion-ios-filing" icon-off="ion-ios-filing-outline">
  *     <!-- Tab 1 content -->
  *   </ion-tab>
  *
- *   <ion-tab title="About" icon-on="ion-ios7-clock" icon-off="ion-ios7-clock-outline">
+ *   <ion-tab title="About" icon-on="ion-ios-clock" icon-off="ion-ios-clock-outline">
  *     <!-- Tab 2 content -->
  *   </ion-tab>
  *
- *   <ion-tab title="Settings" icon-on="ion-ios7-gear" icon-off="ion-ios7-gear-outline">
+ *   <ion-tab title="Settings" icon-on="ion-ios-gear" icon-off="ion-ios-gear-outline">
  *     <!-- Tab 3 content -->
  *   </ion-tab>
  *
