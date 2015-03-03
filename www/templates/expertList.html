@@ -1,0 +1,32 @@
+<ion-view view-title="전문가 목록">
+  <ion-content>
+    <ion-list>
+      <ion-item ng-repeat="expert in expertlist" class="list card" onclick="location.href='#/app/expert/{{expert.id}}'">
+
+  <div class="item item-avatar">
+    <img src="{{expert.photo}}">
+    <h2>
+      <span style='float:left;'>
+        {{expert.name}}
+      </span>
+      <span style='float:right;'>
+        <i ng-repeat="i in getStars(expert.eval_score) track by $index" class="icon {{i}}" style="color:orange;"></i>
+        <span style="font-size:14px;">
+        {{expert.eval_score}} / 5
+        </span>
+      </span>
+    </h2>
+    <p style='font-size:12px'>{{expert.introduction}}</p>
+  </div>
+
+  <div class="item item-body">
+    <p>
+      
+    </p>
+  </div>
+
+
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
