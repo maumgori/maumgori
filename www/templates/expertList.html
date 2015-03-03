@@ -1,9 +1,12 @@
 <ion-view view-title="전문가 목록">
   <ion-content>
     <ion-list>
-      <ion-item ng-repeat="expert in expertlist" class="list card" onclick="location.href='#/app/expert/{{expert.id}}'">
+      <ion-item ng-repeat="expert in expertlist" class="list card" style="padding-right:0px;">
 
-  <div class="item item-avatar">
+<a href='#/app/expert/{{expert.id}}' style="text-decoration:none;">
+<!-- ion-item 수준에서 ng-click 으로 이벤트 줘야 하는데 어떻게 줄지 잘 모르겠다. 햏햏; -->
+
+  <div class="item item-avatar item-stable">
     <img src="{{expert.photo}}">
     <h2>
       <span style='float:left;'>
@@ -19,13 +22,14 @@
     <p style='font-size:12px'>{{expert.introduction}}</p>
   </div>
 
-  <div class="item item-body">
-    <p>
-      
-    </p>
+  <div class="item item-body" style="padding:10px;">
+
+      무슨 무슨 전문가 입니다.
+      <br>주절 주절.
+
   </div>
 
-
+</a>
       </ion-item>
     </ion-list>
   </ion-content>

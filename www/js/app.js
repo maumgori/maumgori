@@ -30,20 +30,11 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     controller: 'AppCtrl'
   })
 
-  .state('app.search', {
-    url: "/search",
+  .state('app.mypage', {
+    url: "/mypage",
     views: {
       'menuContent': {
-        templateUrl: "templates/search.html"
-      }
-    }
-  })
-
-  .state('app.browse', {
-    url: "/browse",
-    views: {
-      'menuContent': {
-        templateUrl: "templates/browse.html"
+        templateUrl: "templates/mypage.html"
       }
     }
   })
@@ -58,7 +49,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
-  .state('app.coachlist', {
+  .state('app.expert', {
     url: "/expert/:expertId",
     views: {
       'menuContent': {
