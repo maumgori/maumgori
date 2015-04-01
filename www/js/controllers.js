@@ -1,18 +1,4 @@
 
-/* 코치 배열 객체. 초반에 어떻게 가져올지는 연구 해 봅시다.
-var expert_list = [
-  { name: '정진', id: 'jin', photo:'http://www.maumgori.com/img/jin_photo.png', eval_score : 5,
-    introduction : '국제코치연맹 소속 라이프 코치 겸 강사'
-  },
-  { name: '김종민', id: 'min', photo:'http://www.maumgori.com/img/min_photo.png', eval_score : 3.5,
-    introduction : '캔두잇소프트(스타트업) CTO'
-  },
-  { name: '김진선', id: 'sun', photo:'http://www.maumgori.com/img/sun_photo.png', eval_score : 4,
-    introduction : '프리랜서, 웹퍼블리셔'
-  }
-];
-*/
-
 var ctrl = angular.module('starter.controllers', []);
 
 var config_obj;
@@ -25,12 +11,19 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, $http) {
   $http.get('config/config.json').then(function(res){
     config_obj = res.data;
     socket = io(config_obj.host + ":" +config_obj.port);  //socket.io 생성.
+
     socket.emit('getExpertList',{});
+    socket.emit('getMetaData');
 
     socket.on('expertList', function(data){
       //console.log(data);
       $scope.$broadcast('expert_list', data); // 전체 Scope에 반영될 수 있도록 알림. $scope.$on 에서 리슨.
     });
+
+    socket.on('metaData', function(data){
+      $scope.$broadcast('meta_data', data); // 전체 Scope에 반영될 수 있도록 알림. $scope.$on 에서 리슨.
+    });
+
   });
 
   // Form data for the login modal
@@ -73,8 +66,21 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams) {
     $scope.configObj = config_obj;
     $scope.$apply();  // 이벤트나 소켓 한 다음에는 꼭 반영할것.
     console.log($scope.expertlist);
-    console.log($scope.configObj);
+    //console.log($scope.configObj);
   });
+
+  $scope.$on('meta_data',function(event, data){
+    $scope.metaData = data;
+    //선택된 카테고리 리턴. 필터에 사용.
+    $scope.filterByCategory = function(expected, actual){
+      //console.log("expected : "+expected);
+      //console.log("actual : "+actual);
+      return actual.indexOf(expected) > -1;
+    };
+    $scope.$apply();  // 이벤트나 소켓 한 다음에는 꼭 반영할것.
+    console.log($scope.metaData);
+  });
+
 
   $scope.getStars = function(num){
     var starArr = new Array(5);
