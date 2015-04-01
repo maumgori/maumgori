@@ -1,36 +1,22 @@
 <ion-side-menus enable-menu-with-back-views="false">
   <ion-side-menu-content>
-    <ion-nav-bar class="bar-stable">
-      <ion-nav-back-button>
-      </ion-nav-back-button>
-
-      <ion-nav-buttons side="left">
-        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
-        </button>
-      </ion-nav-buttons>
-
-      <ion-nav-buttons side="right">
-          <img src='http://www.maumgori.com/img/maumgori_diamond.png' width='40px'>
-      </ion-nav-buttons>
-
-    </ion-nav-bar>
     <ion-nav-view name="menuContent"></ion-nav-view>
   </ion-side-menu-content>
 
   <ion-side-menu side="left">
-    <ion-header-bar class="bar-stable">
+    <ion-header-bar class="bar-royal">
       <h1 class="title">메뉴</h1>
     </ion-header-bar>
-    <ion-content>
+    <ion-content style="background-color:#002349;">
       <ion-list>
 
-        <ion-item nav-clear menu-close ng-click="login()">
+        <ion-item nav-clear menu-close ng-click="login()" class="item item-royal">
           로그인
         </ion-item>
-        <ion-item nav-clear menu-close href="#/app/mypage">
+        <ion-item nav-clear menu-close href="#/app/mypage" class="item item-royal">
           마이페이지
         </ion-item>
-        <ion-item nav-clear menu-close href="#/app/expert">
+        <ion-item nav-clear menu-close href="#/app/expert" class="item item-royal">
           전문가 목록
         </ion-item>
 

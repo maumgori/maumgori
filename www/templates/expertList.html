@@ -1,36 +1,80 @@
-<ion-view view-title="전문가 목록">
-  <ion-content>
-    <ion-list>
-      <ion-item ng-repeat="expert in expertlist" class="list card" style="padding-right:0px;">
+<!-- 내비게이션 바 시작. 각 화면에 전부 추가할것. -->
+<ion-nav-bar class="bar-royal">
+  <ion-nav-back-button>
+  </ion-nav-back-button>
 
-<a href='#/app/expert/{{expert.id}}' style="text-decoration:none;">
-<!-- ion-item 수준에서 ng-click 으로 이벤트 줘야 하는데 어떻게 줄지 잘 모르겠다. 햏햏; -->
+  <ion-nav-buttons side="left">
+    <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+    </button>
+  </ion-nav-buttons>
 
-  <div class="item item-avatar item-stable">
-    <img ng-src="{{expert.photo}}">
-    <h2>
-      <span style='float:left;'>
-        {{expert.name}}
-      </span>
-      <span style='float:right;'>
-        <i ng-repeat="i in getStars(expert.eval_score) track by $index" class="{{i}}" style="color:orange;"></i>
-        <span style="font-size:14px;">
-        {{expert.eval_score}} / 5
-        </span>
-      </span>
-    </h2>
-    <p style='font-size:12px'>{{expert.introduction}}</p>
-  </div>
+  <ion-nav-title ng-click="login()" >
+    전문가 목록
+    <i class="icon ion-arrow-down-b"></i>
+  </ion-nav-title>
 
-  <div class="item item-body" style="padding:10px;">
+  <ion-nav-buttons side="right" padding="true">
+    <a class="button button-icon icon ion-android-bulb"></a>
+    <a class="button button-icon icon ion-android-notifications-none"></a>
+  </ion-nav-buttons>
+</ion-nav-bar>
+<!-- 내비게이션 바 끝.-->
 
-      무슨 무슨 전문가 입니다.
-      <br>주절 주절.
+<ion-view view-title="">
+  <ion-content style="margin-top:42px;">
 
-  </div>
-
-</a>
+    <ion-list class="list">
+      <ion-item class="item item-button-right">
+        <h4>
+          총
+          <span style="color:blue;">{{expertlist.length}}</span>명의
+          전문가가 당신을 기다리고 있습니다.
+        </h4>
+        <button type="button" class="button button-icon">
+          <i class="icon ion-android-options"></i>
+        </button>
       </ion-item>
     </ion-list>
+
+    <ion-list style="margin-top:200px;">
+      <ion-item ng-repeat="expert in expertlist" class="list card expert-list-item">
+        <div class="row">
+          <div class="col-xs-4 col-5px">
+            <img class="img-circle" ng-src="http://{{configObj.host+':'+configObj.port+expert.user_photo}}" width="100%" />
+          </div>
+          <div class="col-xs-8 col-5px">
+            <div class="row">
+              <div class="col">
+              </div>
+              <div class="col">
+                <button class="button button-icon pull-right" style="color:pink;">
+                  <i class="icon ion-android-favorite-outline"></i> 찜
+                </button>
+              </div>
+            </div>
+            <div class="row card-cont">
+              <h4>
+                {{expert.profile_title}}
+              </h4>
+            </div>
+            <div class="row card-cont">
+              <h4 type="button" class="thumbnail" style="padding:2px 4px;">
+                {{expert.expert_type}}
+              </h4>
+              <h3 style="padding:3px;">
+                {{expert.name}}
+                <small style="font-size:0.8em;">님</small>
+              </h3>
+            </div>
+            <div class="row card-cont">
+              {{expert.category[0]}}
+              {{expert.category[1]}}
+              {{expert.category[2]}}
+            </div>
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+
   </ion-content>
 </ion-view>

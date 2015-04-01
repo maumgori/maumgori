@@ -1,5 +1,5 @@
 
-// 코치 배열 객체. 초반에 어떻게 가져올지는 연구 해 봅시다.
+/* 코치 배열 객체. 초반에 어떻게 가져올지는 연구 해 봅시다.
 var expert_list = [
   { name: '정진', id: 'jin', photo:'http://www.maumgori.com/img/jin_photo.png', eval_score : 5,
     introduction : '국제코치연맹 소속 라이프 코치 겸 강사'
@@ -11,11 +11,28 @@ var expert_list = [
     introduction : '프리랜서, 웹퍼블리셔'
   }
 ];
+*/
 
+var ctrl = angular.module('starter.controllers', []);
 
-angular.module('starter.controllers', [])
+var config_obj;
+var socket;
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, $http) {
+
+  //1. config.json 파일 읽어들임.
+  //2. socket.io 설정.
+  $http.get('config/config.json').then(function(res){
+    config_obj = res.data;
+    socket = io(config_obj.host + ":" +config_obj.port);  //socket.io 생성.
+    socket.emit('getExpertList',{});
+
+    socket.on('expertList', function(data){
+      //console.log(data);
+      $scope.$broadcast('expert_list', data); // 전체 Scope에 반영될 수 있도록 알림. $scope.$on 에서 리슨.
+    });
+  });
+
   // Form data for the login modal
   $scope.loginData = {};
 
@@ -45,12 +62,19 @@ angular.module('starter.controllers', [])
       $scope.closeLogin();
     }, 1000);
   };
-})
+});
 
-.controller('ExpertListCtrl', function($scope, $stateParams) {
+ctrl.controller('ExpertListCtrl', function($scope, $stateParams) {
 //  console.log('ExpertListCtrl 설정 - 2');
   // 서버에서 전문가 목록을 가져와서 $scope.expertlist 에 배열로 셋팅.
-  $scope.expertlist = expert_list;
+
+  $scope.$on('expert_list',function(event, data){
+    $scope.expertlist = data;
+    $scope.configObj = config_obj;
+    $scope.$apply();  // 이벤트나 소켓 한 다음에는 꼭 반영할것.
+    console.log($scope.expertlist);
+    console.log($scope.configObj);
+  });
 
   $scope.getStars = function(num){
     var starArr = new Array(5);
@@ -66,15 +90,10 @@ angular.module('starter.controllers', [])
     return starArr;
   }
 
-})
+});
 
-.controller('ExpertCtrl', function($scope) {
-  console.log('ExpertCtrl 설정');
-
-})
-
-.controller('ExpertCtrl', function($scope, $stateParams, $location) {
-
+ctrl.controller('ExpertCtrl', function($scope, $stateParams, $location) {
+  console.log($scope.expertList);
 //  console.log('ExpertCtrl 설정 - 2');
   var eid=$location.$$path;
   eid = eid.replace("app/expert","");

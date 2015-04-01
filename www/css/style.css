@@ -1,1 +1,18 @@
 /* Empty. Add your own CSS if you like */
+
+.expert-list-item {
+  margin: 5px;
+  padding: 0px;
+}
+
+.row{
+  margin:0px;
+  padding:0px;
+}
+.col-5px {
+  padding: 5px;
+}
+
+.card-cont {
+  padding:10px 0px;
+}
