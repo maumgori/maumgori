@@ -1,5 +1,5 @@
 
-var ctrl = angular.module('starter.controllers', []);
+var ctrl = angular.module('starter.controllers', ['services']);
 
 var config_obj;
 var socket;
@@ -8,6 +8,7 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, $http) {
 
   //1. config.json 파일 읽어들임.
   //2. socket.io 설정.
+  /*
   $http.get('config/config.json').then(function(res){
     config_obj = res.data;
     socket = io(config_obj.host + ":" +config_obj.port);  //socket.io 생성.
@@ -23,9 +24,8 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, $http) {
     socket.on('metaData', function(data){
       $scope.$broadcast('meta_data', data); // 전체 Scope에 반영될 수 있도록 알림. $scope.$on 에서 리슨.
     });
-
   });
-
+  */
   // Form data for the login modal
   $scope.loginData = {};
 
@@ -55,12 +55,23 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, $http) {
       $scope.closeLogin();
     }, 1000);
   };
+
 });
 
-ctrl.controller('ExpertListCtrl', function($scope, $stateParams) {
+ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket) {
 //  console.log('ExpertListCtrl 설정 - 2');
-  // 서버에서 전문가 목록을 가져와서 $scope.expertlist 에 배열로 셋팅.
+  $scope.getMetaData = function(){
+    console.log('metadata');
+    $http.get('http://'+config_obj.host + ":" +config_obj.port+'/metadata').success(function(data){
+      console.log(data);
+      alert(data.category[1].name);
+    }).error(function(error){
+      console.log("error : "+error);
+    });
+  }
 
+/*
+  // 서버에서 전문가 목록을 가져와서 $scope.expertlist 에 배열로 셋팅.
   $scope.$on('expert_list',function(event, data){
     $scope.expertlist = data;
     $scope.configObj = config_obj;
@@ -80,21 +91,39 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams) {
     $scope.$apply();  // 이벤트나 소켓 한 다음에는 꼭 반영할것.
     console.log($scope.metaData);
   });
+  */
 
+  //땡겨서 리프레쉬
+  $scope.doRefresh = function() {
+    socket.emit('getExpertList',{});
+    socket.emit('getMetaData');
+    $scope.$broadcast('scroll.refreshComplete');
+    $scope.$apply();
+  };
 
-  $scope.getStars = function(num){
-    var starArr = new Array(5);
-    for(var i=0; i<5; i++){
-      if((i+1) <= num){
-        starArr[i] = 'ion-ios-star';
-      } else if(((i+1) > num) && ((i) < num)){
-        starArr[i] = 'ion-ios-star-half';
-      } else {
-        starArr[i] = 'ion-ios-star-outline';
-      }
-    }
-    return starArr;
-  }
+  $http.get('config/config.json').then(function(res){
+    $scope.configObj = res.data;
+  });
+
+  socket.emit('getExpertList',{});
+  socket.emit('getMetaData');
+
+  socket.on('expertList', function(data){
+    //console.log(data);
+    $scope.expertlist = data;
+    console.log($scope.expertlist);
+  });
+
+  socket.on('metaData', function(data){
+    $scope.metaData = data;
+    //선택된 카테고리 리턴. 필터에 사용.
+    $scope.filterByCategory = function(expected, actual){
+      //console.log("expected : "+expected);
+      //console.log("actual : "+actual);
+      return actual.indexOf(expected) > -1;
+    };
+    console.log($scope.metaData);
+  });
 
 });
 
