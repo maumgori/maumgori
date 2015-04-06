@@ -1,6 +1,6 @@
 angular.module('services', [])
 .factory('socket', function socket($rootScope) {
-  var socket = io.connect('http://mypick.kr:3000');
+  var socket = io.connect('http://'+config_obj.host + ":" +config_obj.port);
   return {
     on: function (eventName, callback) {
       socket.on(eventName, function () {
