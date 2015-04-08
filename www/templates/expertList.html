@@ -1,28 +1,28 @@
-<!-- 내비게이션 바 시작. 각 화면에 전부 추가할것. -->
-<ion-nav-bar class="bar-royal">
-  <ion-nav-back-button>
-  </ion-nav-back-button>
+<ion-view>
 
-  <ion-nav-buttons side="left">
-    <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
-    </button>
-  </ion-nav-buttons>
+  <!-- 내비게이션 바 시작. 각 화면에 전부 추가할것. -->
+  <ion-nav-bar class="bar-royal">
+    <ion-nav-back-button>
+    </ion-nav-back-button>
 
-  <ion-nav-title ng-click="login()" >
-    전문가 목록
-    <i class="icon ion-arrow-down-b"></i>
-  </ion-nav-title>
+    <ion-nav-buttons side="left">
+      <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+      </button>
+    </ion-nav-buttons>
 
-  <ion-nav-buttons side="right" padding="true">
-    <a class="button button-icon icon ion-android-bulb"></a>
-    <a class="button button-icon icon ion-android-notifications-none"></a>
-  </ion-nav-buttons>
-</ion-nav-bar>
-<!-- 내비게이션 바 끝.-->
+    <ion-nav-title ng-click="filterShow()"  >
+      전문가 목록
+      <i class="icon ion-ios-search-strong"></i>
+    </ion-nav-title>
 
+    <ion-nav-buttons side="right">
+      <a class="button icon ion-ios-lightbulb-outline"></a>
+      <a class="button icon ion-ios-bell-outline"></a>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  <!-- 내비게이션 바 끝.-->
 
-<ion-view view-title="">
-  <ion-content style="margin-top:42px;">
+  <ion-content>
 
     <ion-refresher pulling-text="Pull to refresh" on-refresh="doRefresh()">
     </ion-refresher>

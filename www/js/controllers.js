@@ -1,7 +1,7 @@
 
 var ctrl = angular.module('starter.controllers', ['services']);
 
-ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, $http) {
+ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
   // Form data for the login modal
   $scope.loginData = {};
 
@@ -34,9 +34,48 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, $http) {
 
 });
 
-ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket) {
+ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, $ionicModal) {
 //  console.log('ExpertListCtrl 설정 - 2');
   $scope.configObj = config_obj;
+  $scope.search_obj = {
+    category : {},
+    categoryIsCheckedAll : false,
+    categoryCheckAll : function(){
+      if($scope.search_obj.categoryIsCheckedAll){
+        for(var i=0; i < $scope.search_obj.category.length; i++){
+          $scope.search_obj.category[i].ischecked = false;
+        }
+        $scope.search_obj.categoryIsCheckedAll = false;
+      } else {
+        for(var i=0; i < $scope.search_obj.category.length; i++){
+          $scope.search_obj.category[i].ischecked = true;
+        }
+        $scope.search_obj.categoryIsCheckedAll = true;
+      }
+    },
+    price : {
+      phone : false,
+      email : false,
+      message : false,
+      interview : false
+    },
+    priceIsCheckedAll: false,
+    priceCheckAll : function(){
+      if($scope.search_obj.priceIsCheckedAll){
+        $scope.search_obj.price.phone = false;
+        $scope.search_obj.price.email = false;
+        $scope.search_obj.price.message = false;
+        $scope.search_obj.price.interview = false;
+        $scope.search_obj.priceIsCheckedAll = false;
+      } else {
+        $scope.search_obj.price.phone = true;
+        $scope.search_obj.price.email = true;
+        $scope.search_obj.price.message = true;
+        $scope.search_obj.price.interview = true;
+        $scope.search_obj.priceIsCheckedAll = true;
+      }
+    },
+  };
 
   $scope.getMetaData = function(){
     console.log('metadata');
@@ -75,8 +114,31 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket) 
         return actual.indexOf(expected) > -1;
       }
     };
+
+    //검색용 obj 에 카테고리 값 셋팅.
+    $scope.search_obj.category = data.category;
+    for(var i=0; i < data.category.length; i++){
+      $scope.search_obj.category[i].ischecked = false;
+    }
     //console.log($scope.metaData);
   });
+
+  //검색 모달.
+  $ionicModal.fromTemplateUrl('templates/expertFilter.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.searchModal = modal;
+  });
+
+  // Triggered in the login modal to close it
+  $scope.filterHide = function() {
+    $scope.searchModal.hide();
+  };
+
+  // Open the login modal
+  $scope.filterShow = function() {
+    $scope.searchModal.show();
+  };
 
 });
 
