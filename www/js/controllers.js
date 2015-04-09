@@ -1,4 +1,3 @@
-
 var ctrl = angular.module('starter.controllers', ['services']);
 
 ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
@@ -36,6 +35,8 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
 ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, $ionicModal) {
 //  console.log('ExpertListCtrl 설정 - 2');
+  var search_sql = {};  // ES 검색 쿼리.
+
   $scope.configObj = config_obj;
   $scope.search_obj = {
     category : {},
@@ -76,7 +77,8 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, 
       }
     },
     price_min : 5000,
-    price_max : 100000
+    price_max : 100000,
+    searchword : ""
   };
 
   $scope.getMetaData = function(){
@@ -91,13 +93,14 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, 
 
   //땡겨서 리프레쉬
   $scope.doRefresh = function() {
-    socket.emit('getExpertList',{});
+    socket.emit('getExpertList',search_sql);
     socket.emit('getMetaData');
     $scope.$broadcast('scroll.refreshComplete');
     $scope.$apply();
   };
 
-  socket.emit('getExpertList',{});
+  //최초 데이터 호출.
+  socket.emit('getExpertList',search_sql);
   socket.emit('getMetaData');
 
   socket.on('expertList', function(data){
@@ -132,12 +135,47 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, 
     $scope.searchModal = modal;
   });
 
-  // Triggered in the login modal to close it
+  //검색 모달 숨김.
   $scope.filterHide = function() {
     $scope.searchModal.hide();
   };
 
-  // Open the login modal
+  $scope.filterSearch = function() {
+    $scope.searchModal.hide();
+    //var cate_str = "";
+    var cate_vals = [];
+    for(var i=0; i < $scope.search_obj.category.length; i++){
+      if($scope.search_obj.category[i].ischecked === true){
+//        cate_str += $scope.search_obj.category[i].name+" ";
+        cate_vals.push($scope.search_obj.category[i].name);
+      }
+    }
+    search_sql = {
+      filter : {
+        bool : {
+          must : [
+            {
+              terms : {
+                category : cate_vals
+              }
+            }
+          ]
+        }
+      }
+    };
+    if($scope.search_obj.searchword !== ""){
+      var query_obj = {
+        match : {
+          _all : $scope.search_obj.searchword
+        }
+      }
+      search_sql.query = query_obj;
+    }
+    //console.log(JSON.stringify(search_sql));
+    socket.emit('getExpertList',search_sql);
+  };
+
+  //검색 모달 오픈.
   $scope.filterShow = function() {
     $scope.searchModal.show();
   };
