@@ -39,7 +39,7 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, 
   $scope.configObj = config_obj;
   $scope.search_obj = {
     category : {},
-    categoryIsCheckedAll : false,
+    categoryIsCheckedAll : true,
     categoryCheckAll : function(){
       if($scope.search_obj.categoryIsCheckedAll){
         for(var i=0; i < $scope.search_obj.category.length; i++){
@@ -54,12 +54,12 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, 
       }
     },
     price : {
-      phone : false,
-      email : false,
-      message : false,
-      interview : false
+      phone : true,
+      email : true,
+      message : true,
+      interview : true
     },
-    priceIsCheckedAll: false,
+    priceIsCheckedAll: true,
     priceCheckAll : function(){
       if($scope.search_obj.priceIsCheckedAll){
         $scope.search_obj.price.phone = false;
@@ -75,6 +75,8 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, 
         $scope.search_obj.priceIsCheckedAll = true;
       }
     },
+    price_min : 5000,
+    price_max : 100000
   };
 
   $scope.getMetaData = function(){
@@ -118,7 +120,7 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, 
     //검색용 obj 에 카테고리 값 셋팅.
     $scope.search_obj.category = data.category;
     for(var i=0; i < data.category.length; i++){
-      $scope.search_obj.category[i].ischecked = false;
+      $scope.search_obj.category[i].ischecked = true;
     }
     //console.log($scope.metaData);
   });

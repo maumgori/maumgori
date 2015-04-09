@@ -52,21 +52,25 @@
     <div class="container">
       <div class="col-xs-6" style="padding:5px;">
         <button ng-class="{'button-outline' : !search_obj.price.phone}" class="button button-block button-energized" style="padding:3px; margin:0px; border-radius:10px;" ng-click="search_obj.price.phone = !search_obj.price.phone">
+          <i class="icon ion-android-call"></i>
           전화
         </button>
       </div>
       <div class="col-xs-6" style="padding:5px;">
         <button ng-class="{'button-outline' : !search_obj.price.email}" class="button button-block button-energized" style="padding:3px; margin:0px; border-radius:10px;" ng-click="search_obj.price.email = !search_obj.price.email">
+          <i class="icon ion-android-mail"></i>
           이메일
         </button>
       </div>
       <div class="col-xs-6" style="padding:5px;">
         <button ng-class="{'button-outline' : !search_obj.price.message}" class="button button-block button-energized" style="padding:3px; margin:0px; border-radius:10px;" ng-click="search_obj.price.message = !search_obj.price.message">
+          <i class="icon ion-android-textsms"></i>
           문자/메시지
         </button>
       </div>
       <div class="col-xs-6" style="padding:5px;">
         <button ng-class="{'button-outline' : !search_obj.price.interview}" class="button button-block button-energized" style="padding:3px; margin:0px; border-radius:10px;" ng-click="search_obj.price.interview = !search_obj.price.interview">
+          <i class="icon ion-android-contacts"></i>
           대면
         </button>
       </div>
@@ -74,13 +78,21 @@
 
     <br>
     <div class="container">
-
-    </div>
-    <div class="container">
-      <div class="range range-energized">
-        <input type="range" name="volume">
+      <div class="col-xs-6">
+        <h4 style="color:white;padding-top:15px;margin:0px;">가격</h4>
       </div>
     </div>
+    <div class="range range-energized">
+      <span>최소</span>
+      <input type="range" min="0" max="{{search_obj.price_max}}" step="1000" ng-model="search_obj.price_min">
+      <span>{{search_obj.price_min|currency:"&#8361; ":0}}</span>
+    </div>
+    <div class="range range-energized">
+      <span>최대</span>
+      <input type="range" min="{{search_obj.price_min}}" max="1000000" step="1000" ng-model="search_obj.price_max">
+      <span>{{search_obj.price_max|currency:"&#8361; ":0}}</span>
+    </div>
+
 
 
   </ion-content>
