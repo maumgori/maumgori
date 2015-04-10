@@ -76,8 +76,8 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, 
         $scope.search_obj.priceIsCheckedAll = true;
       }
     },
-    price_min : 5000,
     price_max : 100000,
+    price_min : 5000,
     searchword : ""
   };
 
