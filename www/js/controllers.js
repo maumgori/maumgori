@@ -143,26 +143,44 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, 
   $scope.filterSearch = function() {
     $scope.searchModal.hide();
     //var cate_str = "";
+
+    var filter_arr = [];
+
+    //전문분야 질의값
     var cate_vals = [];
     for(var i=0; i < $scope.search_obj.category.length; i++){
       if($scope.search_obj.category[i].ischecked === true){
-//        cate_str += $scope.search_obj.category[i].name+" ";
         cate_vals.push($scope.search_obj.category[i].name);
       }
     }
+    filter_arr.push( { terms : { category : cate_vals } } );
+
+    //방식 질의값
+    var price_vals = [];
+    if($scope.search_obj.price.phone === true){
+      price_vals.push("phone");
+    }
+    if($scope.search_obj.price.email === true){
+      price_vals.push("email");
+    }
+    if($scope.search_obj.price.message === true){
+      price_vals.push("message");
+    }
+    if($scope.search_obj.price.interview === true){
+      price_vals.push("interview");
+    }
+    filter_arr.push( { terms : { "price.enable_list" : price_vals } } );
+
+    //가격 범위 질의값
+    filter_arr.push( { range : { "price.min_amount" : { lte : $scope.search_obj.price_max } } } );
+    filter_arr.push( { range : { "price.max_amount" : { gte : $scope.search_obj.price_min } } } );
+
     search_sql = {
       filter : {
-        bool : {
-          must : [
-            {
-              terms : {
-                category : cate_vals
-              }
-            }
-          ]
-        }
+        and : filter_arr
       }
     };
+
     if($scope.search_obj.searchword !== ""){
       var query_obj = {
         match : {
