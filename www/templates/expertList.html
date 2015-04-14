@@ -1,26 +1,10 @@
 <ion-view>
 
-  <!-- 내비게이션 바 시작. 각 화면에 전부 추가할것. -->
-  <ion-nav-bar class="bar-royal">
-    <ion-nav-back-button>
-    </ion-nav-back-button>
-
-    <ion-nav-buttons side="left">
-      <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
-      </button>
-    </ion-nav-buttons>
-
-    <ion-nav-title ng-click="filterShow()"  >
-      전문가 목록
-      <i class="icon ion-ios-search-strong"></i>
-    </ion-nav-title>
-
-    <ion-nav-buttons side="right">
-      <a class="button icon ion-ios-lightbulb-outline"></a>
-      <a class="button icon ion-ios-bell-outline"></a>
-    </ion-nav-buttons>
-  </ion-nav-bar>
-  <!-- 내비게이션 바 끝.-->
+  <!-- 이런식으로 타이틀 프레임은 menu.html에 걸어놓고 제목값만 설정 가능함. -->
+  <ion-nav-title ng-click="filterShow()"  >
+    전문가 목록
+    <i class="icon ion-ios-search-strong"></i>
+  </ion-nav-title>
 
   <ion-content>
 
@@ -78,9 +62,9 @@
                 </div>
 
                 <div class="col" style="padding-top:0px;">
-                  <button class="button button-positive button-small pull-right">
+                  <a class="button button-positive button-small pull-right" href='#/app/expert/{{expert.id}}' >
                     자세히 보기 <i class="icon ion-chevron-right"></i>
-                  </button>
+                  </a>
                 </div>
               </div>
 

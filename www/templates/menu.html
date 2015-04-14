@@ -1,6 +1,25 @@
 <ion-side-menus enable-menu-with-back-views="false">
+
   <ion-side-menu-content>
-    
+
+    <!-- 내비게이션 바 시작. 각 화면에 전부 추가할것. -->
+    <ion-nav-bar class="bar-royal">
+      <ion-nav-back-button>
+        뒤로
+      </ion-nav-back-button>
+
+      <ion-nav-buttons side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+        </button>
+      </ion-nav-buttons>
+
+      <ion-nav-buttons side="right">
+        <a class="button icon ion-ios-lightbulb-outline"></a>
+        <a class="button icon ion-ios-bell-outline"></a>
+      </ion-nav-buttons>
+    </ion-nav-bar>
+    <!-- 내비게이션 바 끝.-->
+
 
     <ion-nav-view name="menuContent">
 

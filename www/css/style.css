@@ -41,3 +41,11 @@
   width:25px;
   height:5px;
 }
+
+.text-stroke-white {
+  text-shadow: -1px -1px 1px #eee, 1px -1px 1px #eee, -1px 1px 1px #eee, 1px 1px 1px #eee;
+}
+.text-stroke-black {
+  color: #fff;
+  text-shadow: -1px -1px 1px #111, 1px -1px 1px #111, -1px 1px 1px #111, 1px 1px 1px #111;
+}

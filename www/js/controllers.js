@@ -33,7 +33,8 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
 });
 
-ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, $ionicModal) {
+// 전문가 목록 컨트롤러 시작 //
+ctrl.controller('ExpertListCtrl', function($scope, $http, socket, $ionicModal) {
 //  console.log('ExpertListCtrl 설정 - 2');
   var search_sql = {};  // ES 검색 쿼리.
 
@@ -199,22 +200,55 @@ ctrl.controller('ExpertListCtrl', function($scope, $stateParams, $http, socket, 
   };
 
 });
+// 전문가 목록 컨트롤러 끝 //
 
-ctrl.controller('ExpertCtrl', function($scope, $stateParams, $location) {
-  console.log($scope.expertList);
-//  console.log('ExpertCtrl 설정 - 2');
-  var eid=$location.$$path;
-  eid = eid.replace("app/expert","");
-  eid = eid.replace("/","");
-  eid = eid.replace("/","");
-//  console.log(eid);
-  // id 가 url의 Id 인 녀석을 찾아 해당 객체를 expert에 리턴.
-  var exp;
-  for(var e=0; e<expert_list.length; e++){
-    if(expert_list[e].id === eid){
-      exp = expert_list[e];
+// 전문가 상세 컨트롤러 시작 //
+ctrl.controller('ExpertCtrl', function($scope, $stateParams, socket) {
+  $scope.configObj = config_obj;
+  //console.log($stateParams.expertId); //id 가져옴.
+  var search_sql = {
+    filter : {
+      term : { "_id" : $stateParams.expertId }
     }
-  }
-  $scope.expert = exp;
+  };
+  //console.log(JSON.stringify(search_sql));
+  socket.emit('getExpertList',search_sql);
+  socket.emit('getMetaData');
+
+  socket.on('expertList', function(data){
+    $scope.expert = data[0];
+    //console.log(data);
+
+    //HTML값 직접 가져와서 하려고 했더니 안되서 부득이하게 html 값 만들어 입력하는 방식으로 함.
+    var profile_div = $('#profile_div');
+    var p_width = profile_div.width();
+    var profile_style_val = '';
+    profile_style_val += 'padding:0px;';
+    profile_style_val += 'margin:0px;';
+    profile_style_val += 'position:relative;';
+    profile_style_val += 'width:100%;';
+    profile_style_val += 'height:'+(p_width/2)+'px;';
+    profile_style_val += 'background-size:100%;';
+    profile_style_val += "background-image:url('http://"+$scope.configObj.host+":"+$scope.configObj.port+$scope.expert.profile_bg_img+"');";
+    $scope.profile_style = profile_style_val;
+
+  });
+
+  socket.on('metaData', function(data){
+    $scope.metaData = data;
+    //선택된 카테고리 리턴. 필터에 사용.
+    $scope.filterByCategory = function(expected, actual){
+      //console.log("expected : "+expected);
+      //console.log("actual : "+actual);
+      if(actual !== null){
+        //가입 하다가 만 경우 actual == null 나옴.
+        return actual.indexOf(expected) > -1;
+      }
+    };
+    //console.log($scope.metaData);
+  });
+
+  $scope.tab_val="info";
 
 });
+// 전문가 상세 컨트롤러 끝 //

@@ -1,5 +1,180 @@
-<ion-view view-title="{{expert.name}} 전문가">
+<ion-view>
+  <ion-nav-title>
+    프로필
+  </ion-nav-title>
+
   <ion-content>
-    <h1>{{expert.name}} 전문가 - 준비중</h1>
+    <!-- 프로필 이미지 & 텍스트 -->
+    <div class="row" id="profile_div" style="{{profile_style}}">
+      <div style="position:absolute; {{expert.proflie_txt_location}}:0; padding:12px;">
+        <h4 ng-class="{'text-stroke-white':!expert.proflie_txt_color,'text-stroke-black':expert.proflie_txt_color}">{{expert.profile_title}}</h4>
+        <span ng-class="{'text-stroke-white':!expert.proflie_txt_color,'text-stroke-black':expert.proflie_txt_color}" style="white-space: pre;">{{expert.profile_text}}</span>
+      </div>
+    </div>
+
+    <!-- 정보, 가격, 평점 버튼 -->
+    <div class="row" style="padding:0px;margin:0px;">
+      <div class="col" style="padding:0px;margin:0px;">
+        <button type="button" ng-class="{'button-outline':tab_val!=='info'}" ng-click="tab_val='info'" class="button button-block button-stable" style="margin:0px;">정보</button>
+      </div>
+      <div class="col" style="padding:0px;margin:0px;">
+        <button type="button" ng-class="{'button-outline':tab_val!=='price'}" ng-click="tab_val='price'" class="button button-block button-stable" style="margin:0px;">가격</button>
+      </div>
+      <div class="col" style="padding:0px;margin:0px;">
+        <button type="button" ng-class="{'button-outline':tab_val!=='score'}" ng-click="tab_val='score'" class="button button-block button-stable" style="margin:0px;">평점</button>
+      </div>
+    </div>
+
+    <!-- 정보 탭 시작 -->
+    <div ng-show="tab_val==='info'" style="margin-top:10px;">
+
+      <div class="row">
+        <div class="col col-25 text-right">
+          <strong>이름</strong>
+        </div>
+        <div class="col col-75">
+          {{expert.name}}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col col-25 text-right">
+          <strong>전문자격</strong>
+        </div>
+        <div class="col col-75">
+          {{expert.expert_type}}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col col-25 text-right">
+          <strong>전문분야</strong>
+        </div>
+        <div class="col col-75">
+          <span style="padding:3px;font-size:12px;" class="cate-name" ng-repeat="cate in metaData.category | filter:{name:expert.category}:filterByCategory" ng-style="cate.style">
+            {{cate.name}}
+          </span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col col-25 text-right">
+          <strong>서비스 방법</strong>
+        </div>
+        <div class="col col-75">
+          <span ng-show="expert.price.phone_enable" style="color:gray;">| 전화</span>
+          <span ng-show="expert.price.email_enable" style="color:gray;">&nbsp;| 이메일</span>
+          <span ng-show="expert.price.message_enable" style="color:gray;">&nbsp;| 문자/메시지</span>
+          <span ng-show="expert.price.interview_enable" style="color:gray;">&nbsp;| 대면</span>
+          <span style="color:gray;">&nbsp;|</h4>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col col-25 text-right">
+          <strong>학력/경력</strong>
+        </div>
+        <div class="col col-75">
+          <span  style="white-space: pre;">{{expert.career}}</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col col-25 text-right">
+          <strong>활동 이력</strong>
+        </div>
+        <div class="col col-75">
+          <span  style="white-space: pre;">{{expert.activity}}</span>
+        </div>
+      </div>
+
+    </div>
+    <!-- 정보 탭 끝 -->
+
+    <!-- 가격 탭 시작 -->
+    <div ng-show="tab_val==='price'">
+      <div class="row">
+        <div class="col" style="padding:10px;">
+          <h4>이용방법 별 가격</h4>
+          <p>
+            아래는 기준 금액이며, 실제 금액은 계약 시점에 전문가와 협의하여 조정 가능합니다.
+          </p>
+        </div>
+      </div>
+
+      <div class="list">
+        <div class="item" ng-show="expert.price.phone_enable">
+          <span>
+            <strong>전화</strong>
+          </span>
+          <span class="pull-right">
+            <strong>{{expert.price.phone_amount|currency:"&#8361; ":0}}</strong>
+            / 60분
+          </span>
+        </div>
+
+        <div class="item" ng-show="expert.price.email_enable">
+          <span>
+            <strong>이메일</strong>
+          </span>
+          <span class="pull-right">
+            <strong>{{expert.price.email_amount|currency:"&#8361; ":0}}</strong>
+            / 1회신
+          </span>
+        </div>
+
+        <div class="item" ng-show="expert.price.message_enable">
+          <span>
+            <strong>문자/메시지</strong>
+          </span>
+          <span class="pull-right">
+            <strong>{{expert.price.message_amount|currency:"&#8361; ":0}}</strong>
+            / 60분
+          </span>
+        </div>
+
+        <div class="item" ng-show="expert.price.interview_enable">
+          <span>
+            <strong>대면</strong>
+          </span>
+          <span class="pull-right">
+            <strong>{{expert.price.interview_amount|currency:"&#8361; ":0}}</strong>
+            / 60분
+          </span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <ul>
+            <li>정확한 금액과 시간, 장소비, 교통비 등의 세부 내용은 전문가와 직접 협의하여 결정하시기 바랍니다.</li>
+            <li>사전에 협의되지 않은 추가 비용을 요구하는 경우 마음고리에 신고하여 주십시오.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+    <!-- 가격 탭 끝 -->
+
+    <!-- 평점 탭 시작 -->
+    <div ng-show="tab_val==='score'" style="margin-top:10px;">
+      평점 탭
+    </div>
+    <!-- 평점 탭 끝 -->
+
   </ion-content>
+
+  <ion-footer-bar align-title="left" class="bar-light">
+    <div class="row">
+      <div class="col button button-assertive">
+        <i class="icon ion-star"></i>
+        찜하기
+      </div>
+      <div class="col button button-positive">
+        <i class="icon ion-edit"></i>
+        문의하기
+      </div>
+    </div>
+  </ion-footer-bar>
+
 </ion-view>
