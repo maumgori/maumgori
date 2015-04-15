@@ -36,7 +36,13 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 // 전문가 목록 컨트롤러 시작 //
 ctrl.controller('ExpertListCtrl', function($scope, $http, socket, $ionicModal) {
 //  console.log('ExpertListCtrl 설정 - 2');
-  var search_sql = {};  // ES 검색 쿼리.
+  var search_sql = {
+    filter : {
+      term : {
+        register_done : true
+      }
+    }
+  };  // ES 검색 쿼리.
 
   $scope.configObj = config_obj;
   $scope.search_obj = {
@@ -146,6 +152,9 @@ ctrl.controller('ExpertListCtrl', function($scope, $http, socket, $ionicModal) {
     //var cate_str = "";
 
     var filter_arr = [];
+
+    // 회원가입 끝난 값만.
+    filter_arr.push( { term : { register_done : true } } );
 
     //전문분야 질의값
     var cate_vals = [];
