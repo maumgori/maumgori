@@ -15,7 +15,7 @@
       <ion-item class="item item-button-right">
         <h4>
           총
-          <span style="color:blue;">{{expertlist.length}}</span>명의
+          <span style="color:blue;">{{expertList.length}}</span>명의
           전문가가 당신을 기다리고 있습니다.
         </h4>
         <button type="button" class="button button-icon" ng-click="getMetaData();">
@@ -25,16 +25,16 @@
     </ion-list>
 
     <ion-list>
-      <div  ng-repeat="expert in expertlist" class="col-xs-12 col-sm-6 list" style="padding:0px;margin:0px;">
+      <div  ng-repeat="expert in expertList" class="col-xs-12 col-sm-6 list" style="padding:0px;margin:0px;">
         <ion-item class="card expert-list-item">
           <div class="row">
             <div class="row">
-              <span class="cate-tag" ng-repeat="cate in metaData.category | filter:{name:expert.category}:filterByCategory" ng-style="cate.style">
+              <span class="cate-tag" ng-repeat="cate in expert.category_list" ng-show="cate.checked" ng-style="cate.style">
               </span>
             </div>
           </div>
 
-          <div class="row">
+          <a class="row" href="#/app/expert/{{expert.id}}">
             <div class="col col-25">
               <div class="row">
                 <img class="img-circle" ng-src="http://{{configObj.host+':'+configObj.port+expert.user_photo}}" width="100%" height="100%" />
@@ -60,12 +60,13 @@
                     </h4>
                   </div>
                 </div>
-
+                <!--
                 <div class="col" style="padding-top:0px;">
                   <a class="button button-positive button-small pull-right" href='#/app/expert/{{expert.id}}' >
                     자세히 보기 <i class="icon ion-chevron-right"></i>
                   </a>
                 </div>
+                -->
               </div>
 
               <div class="row card-cont">
@@ -75,7 +76,7 @@
               </div>
 
               <div class="row card-cont">
-                <span class="cate-name" ng-repeat="cate in metaData.category | filter:{name:expert.category}:filterByCategory" ng-style="cate.style">
+                <span class="cate-name" ng-repeat="cate in expert.category_list" ng-show="cate.checked" ng-style="cate.style">
                   {{cate.name}}
                 </span>
               </div>
@@ -95,7 +96,7 @@
                 </span>
               </div>
             </div>
-          </div>
+          </a>
         </ion-item>
       </div>
       <!-- 반응형 웹이 잘 안된다. 왜그럴까. 아마도 리스트라 그런듯. -->

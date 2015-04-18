@@ -34,8 +34,8 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 });
 
 // 전문가 목록 컨트롤러 시작 //
-ctrl.controller('ExpertListCtrl', function($scope, $http, socket, $ionicModal) {
-//  console.log('ExpertListCtrl 설정 - 2');
+ctrl.controller('expertListCtrl', function($scope, $http, socket, $ionicModal) {
+//  console.log('expertListCtrl 설정 - 2');
   var search_sql = {
     filter : {
       term : {
@@ -61,6 +61,7 @@ ctrl.controller('ExpertListCtrl', function($scope, $http, socket, $ionicModal) {
         $scope.search_obj.categoryIsCheckedAll = true;
       }
     },
+    location : "",
     price : {
       phone : true,
       email : true,
@@ -83,15 +84,15 @@ ctrl.controller('ExpertListCtrl', function($scope, $http, socket, $ionicModal) {
         $scope.search_obj.priceIsCheckedAll = true;
       }
     },
-    price_max : 100000,
-    price_min : 5000,
+    price_max : 0,
+    price_min : 0,
+    max_price_val : 0,
     searchword : ""
   };
 
   $scope.getMetaData = function(){
-    console.log('metadata');
     $http.get('http://'+config_obj.host + ":" +config_obj.port+'/metadata').success(function(data){
-      console.log(data);
+      //console.log(data);
       alert(data.category[1].name);
     }).error(function(error){
       console.log("error : "+error);
@@ -100,39 +101,71 @@ ctrl.controller('ExpertListCtrl', function($scope, $http, socket, $ionicModal) {
 
   //땡겨서 리프레쉬
   $scope.doRefresh = function() {
-    socket.emit('getExpertList',search_sql);
+
+    var req_data = {
+      index : "users",
+      type : "user",
+      emit: "expertList",
+      query : search_sql
+    }
+    socket.emit('getHits',req_data);
+    //socket.emit('getExpertList',search_sql);
     socket.emit('getMetaData');
     $scope.$broadcast('scroll.refreshComplete');
     $scope.$apply();
   };
 
   //최초 데이터 호출.
-  socket.emit('getExpertList',search_sql);
+  var req_data = {
+    index : "users",
+    type : "user",
+    emit: "expertList",
+    query : search_sql
+  }
+  socket.emit('getHits',req_data);
+  //socket.emit('getExpertList',search_sql);
   socket.emit('getMetaData');
 
   socket.on('expertList', function(data){
-    $scope.expertlist = data;
-    //console.log($scope.expertlist);
+    //console.log(data);
+    $scope.expertList = [];
+    for(var i=0; i < data.hits.length; i++){
+      //console.log(data.hits[i]._source);
+      $scope.expertList.push(data.hits[i]._source);
+    }
   });
 
   socket.on('metaData', function(data){
     $scope.metaData = data;
-    //선택된 카테고리 리턴. 필터에 사용.
-    $scope.filterByCategory = function(expected, actual){
-      //console.log("expected : "+expected);
-      //console.log("actual : "+actual);
-      if(actual !== null){
-        //가입 하다가 만 경우 actual == null 나옴.
-        return actual.indexOf(expected) > -1;
-      }
-    };
-
     //검색용 obj 에 카테고리 값 셋팅.
     $scope.search_obj.category = data.category;
     for(var i=0; i < data.category.length; i++){
       $scope.search_obj.category[i].ischecked = true;
     }
+    $scope.search_obj.location = data.location[1];
     //console.log($scope.metaData);
+  });
+
+  //Max 가격값 가져오는 aggs 질의.
+  var max_price_sql = {
+    index : "users",
+    type : "user",
+    emit : "max_price",
+    query: {
+      size: 0,
+      aggs : {
+        max_price : {
+          max : { field : "max_amount" }
+        }
+      }
+    }
+  }
+  socket.emit('getAggs',max_price_sql);
+  socket.on('max_price', function(data){
+    //console.log(data);
+    $scope.search_obj.max_price_val = data.max_price.value;
+    $scope.search_obj.price_max = data.max_price.value;
+    $scope.search_obj.price_min = 0;
   });
 
   //검색 모달.
@@ -181,6 +214,10 @@ ctrl.controller('ExpertListCtrl', function($scope, $http, socket, $ionicModal) {
     }
     filter_arr.push( { terms : { "price.enable_list" : price_vals } } );
 
+    //지역 질의값
+    var location_val = [ $scope.metaData.location[0], $scope.search_obj.location ];
+    filter_arr.push( { terms : { location : location_val } } );
+
     //가격 범위 질의값
     filter_arr.push( { range : { "price.min_amount" : { lte : $scope.search_obj.price_max } } } );
     filter_arr.push( { range : { "price.max_amount" : { gte : $scope.search_obj.price_min } } } );
@@ -200,7 +237,16 @@ ctrl.controller('ExpertListCtrl', function($scope, $http, socket, $ionicModal) {
       search_sql.query = query_obj;
     }
     //console.log(JSON.stringify(search_sql));
-    socket.emit('getExpertList',search_sql);
+    //console.log($scope.search_obj);
+    //socket.emit('getExpertList',search_sql);
+    var req_data = {
+      index : "users",
+      type : "user",
+      emit: "expertList",
+      query : search_sql
+    }
+    socket.emit('getHits',req_data);
+
   };
 
   //검색 모달 오픈.
@@ -221,12 +267,21 @@ ctrl.controller('ExpertCtrl', function($scope, $stateParams, socket) {
     }
   };
   //console.log(JSON.stringify(search_sql));
-  socket.emit('getExpertList',search_sql);
-  socket.emit('getMetaData');
 
-  socket.on('expertList', function(data){
-    $scope.expert = data[0];
+  var req_data = {
+    index : "users",
+    type : "user",
+    id : $stateParams.expertId,
+    element : "_source",
+    emit: "expertDetail"
+  }
+  socket.emit('getDocument',req_data);
+  //socket.emit('getExpertList',search_sql);
+  //socket.emit('getMetaData');
+
+  socket.on('expertDetail', function(data){
     //console.log(data);
+    $scope.expert = data;
 
     //HTML값 직접 가져와서 하려고 했더니 안되서 부득이하게 html 값 만들어 입력하는 방식으로 함.
     var profile_div = $('#profile_div');
@@ -241,20 +296,6 @@ ctrl.controller('ExpertCtrl', function($scope, $stateParams, socket) {
     profile_style_val += "background-image:url('http://"+$scope.configObj.host+":"+$scope.configObj.port+$scope.expert.profile_bg_img+"');";
     $scope.profile_style = profile_style_val;
 
-  });
-
-  socket.on('metaData', function(data){
-    $scope.metaData = data;
-    //선택된 카테고리 리턴. 필터에 사용.
-    $scope.filterByCategory = function(expected, actual){
-      //console.log("expected : "+expected);
-      //console.log("actual : "+actual);
-      if(actual !== null){
-        //가입 하다가 만 경우 actual == null 나옴.
-        return actual.indexOf(expected) > -1;
-      }
-    };
-    //console.log($scope.metaData);
   });
 
   $scope.tab_val="info";

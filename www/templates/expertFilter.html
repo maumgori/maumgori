@@ -1,6 +1,6 @@
 <ion-modal-view style="color:white;background-color:rgba(0,0,0,0.6);">
 
-  <ion-content>
+  <ion-content id="expert_filter_content">
     <div class="row" style="padding:7px;">
       <div class="col">
         <h4 style="color:white;padding-top:15px;margin:0px;">전문 분야</h4>
@@ -72,6 +72,21 @@
 
     <div class="row" style="padding:7px;">
       <div class="col">
+        <h4 style="color:white;padding-top:15px;margin:0px;">지역</h4>
+      </div>
+    </div>
+    <div class="row" style="padding: 0px 7px;">
+      <div class="col">
+        <select class="form-control" style="background-color:transparent;color:white;" ng-model="search_obj.location">
+          <option ng-repeat="location in metaData.location" ng-hide="$first">{{location}}</option>
+        </select>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="row" style="padding:7px;">
+      <div class="col">
         <h4 style="color:white;padding-top:15px;margin:0px;">가격</h4>
       </div>
     </div>
@@ -88,23 +103,8 @@
       <div class="col">
         <div class="range range-energized">
           <span>최대</span>
-          <input type="range" min="{{search_obj.price_min}}" max="100000" step="1000" ng-model="search_obj.price_max">
+          <input type="range" min="{{search_obj.price_min}}" max="{{search_obj.max_price_val}}" step="1000" ng-model="search_obj.price_max">
           <span>{{search_obj.price_max|currency:"&#8361; ":0}}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col" style="padding-right:0px;">
-        <p style="text-align:center;padding:0px;">최소 : {{search_obj.price_min|currency:"&#8361; ":0}}</p>
-        <div class="range range-energized" style="padding:0px;">
-          <input type="range" min="0" max="{{search_obj.price_max}}" step="1000" ng-model="search_obj.price_min" style="margin-right:0px;">
-        </div>
-      </div>
-      <div class="col" style="padding-left:0px;">
-        <p style="text-align:center;padding:0px;">최대 : {{search_obj.price_max|currency:"&#8361; ":0}}</p>
-        <div class="range range-energized" style="padding:0px;">
-          <input type="range" min="{{search_obj.price_min}}" max="100000" step="1000" ng-model="search_obj.price_max" style="margin-left:0px;">
         </div>
       </div>
     </div>

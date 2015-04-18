@@ -51,7 +51,7 @@
           <strong>전문분야</strong>
         </div>
         <div class="col col-75">
-          <span style="padding:3px;font-size:12px;" class="cate-name" ng-repeat="cate in metaData.category | filter:{name:expert.category}:filterByCategory" ng-style="cate.style">
+          <span style="padding:3px;font-size:12px;" class="cate-name" ng-repeat="cate in expert.category_list" ng-show="cate.checked" ng-style="cate.style">
             {{cate.name}}
           </span>
         </div>

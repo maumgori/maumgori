@@ -21,4 +21,4 @@ angular.module('services', [])
       })
     }
   };
-})
+});

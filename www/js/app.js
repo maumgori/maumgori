@@ -44,7 +44,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     views: {
       'menuContent': {
         templateUrl: "templates/expertList.html",
-        controller: 'ExpertListCtrl'
+        controller: 'expertListCtrl'
       }
     }
   })
