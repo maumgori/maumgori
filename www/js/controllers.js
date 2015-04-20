@@ -35,97 +35,132 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
 // 전문가 목록 컨트롤러 시작 //
 ctrl.controller('expertListCtrl', function($scope, $http, socket, $ionicModal) {
-//  console.log('expertListCtrl 설정 - 2');
+  $scope.configObj = config_obj;
+
+  //검색 SQL 객체 초기값 설정. 회원가입 완료 된 건만 검색 - 공통 적용.
+  // search_sql.filter.and.push(); 로 필터 추가.
   var search_sql = {
     filter : {
-      term : {
-        register_done : true
-      }
+      and : [ { term : { register_done : true } } ]
     }
-  };  // ES 검색 쿼리.
-
-  $scope.configObj = config_obj;
-  $scope.search_obj = {
-    category : {},
-    categoryIsCheckedAll : true,
-    categoryCheckAll : function(){
-      if($scope.search_obj.categoryIsCheckedAll){
-        for(var i=0; i < $scope.search_obj.category.length; i++){
-          $scope.search_obj.category[i].ischecked = false;
-        }
-        $scope.search_obj.categoryIsCheckedAll = false;
-      } else {
-        for(var i=0; i < $scope.search_obj.category.length; i++){
-          $scope.search_obj.category[i].ischecked = true;
-        }
-        $scope.search_obj.categoryIsCheckedAll = true;
-      }
-    },
-    location : "",
-    price : {
-      phone : true,
-      email : true,
-      message : true,
-      interview : true
-    },
-    priceIsCheckedAll: true,
-    priceCheckAll : function(){
-      if($scope.search_obj.priceIsCheckedAll){
-        $scope.search_obj.price.phone = false;
-        $scope.search_obj.price.email = false;
-        $scope.search_obj.price.message = false;
-        $scope.search_obj.price.interview = false;
-        $scope.search_obj.priceIsCheckedAll = false;
-      } else {
-        $scope.search_obj.price.phone = true;
-        $scope.search_obj.price.email = true;
-        $scope.search_obj.price.message = true;
-        $scope.search_obj.price.interview = true;
-        $scope.search_obj.priceIsCheckedAll = true;
-      }
-    },
-    price_max : 0,
-    price_min : 0,
-    max_price_val : 0,
-    searchword : ""
   };
 
-  $scope.getMetaData = function(){
-    $http.get('http://'+config_obj.host + ":" +config_obj.port+'/metadata').success(function(data){
-      //console.log(data);
-      alert(data.category[1].name);
-    }).error(function(error){
-      console.log("error : "+error);
-    });
-  }
+  var search_sql_init = JSON.stringify(search_sql);
 
-  //땡겨서 리프레쉬
-  $scope.doRefresh = function() {
-
-    var req_data = {
-      index : "users",
-      type : "user",
-      emit: "expertList",
-      query : search_sql
-    }
-    socket.emit('getHits',req_data);
-    //socket.emit('getExpertList',search_sql);
-    socket.emit('getMetaData');
-    $scope.$broadcast('scroll.refreshComplete');
-    $scope.$apply();
-  };
-
-  //최초 데이터 호출.
+  //검색 쿼리 저장하는 객체. 기본 값 셋팅.
   var req_data = {
     index : "users",
     type : "user",
+    id : null,
     emit: "expertList",
     query : search_sql
   }
-  socket.emit('getHits',req_data);
-  //socket.emit('getExpertList',search_sql);
-  socket.emit('getMetaData');
 
+  //검색 화면에서 사용하는 옵션들을 저장하는 객체
+  $scope.filter_obj = {
+    category_list : [],
+    location_list : [],
+    location : "전체",
+    method_list : [],
+    method_price_max : 0,
+    method_price_min : 0,
+    method_price_max_val : 0,
+    searchword : ''
+  };
+
+  //검색 화면에서 사용하는 함수들.
+  $scope.filter_func = {
+    categoryCheckedAll : false,
+    categoryCheckAll : function(check_val){
+      //console.log(check_val);
+      for(var i=0; i < $scope.filter_obj.category_list.length; i++){
+        $scope.filter_obj.category_list[i].checked = check_val;
+      }
+      $scope.filter_func.categoryCheckedAll = check_val;
+    },
+    methodCheckedAll : false,
+    methodCheckAll : function(check_val){
+      //console.log(check_val);
+      for(var i=0; i < $scope.filter_obj.method_list.length; i++){
+        $scope.filter_obj.method_list[i].checked = check_val;
+      }
+      $scope.filter_func.methodCheckedAll = check_val;
+    },
+    filterHide : function() {
+      //검색 메뉴에서 취소 버튼 클릭. 검색 창 종료.
+      $scope.searchModal.hide();
+    },
+    filterSearch : function() {
+      //검색 메뉴에서 확인 버튼 클릭. 검색 수행.
+      $scope.searchModal.hide();
+      search_sql = JSON.parse(search_sql_init);
+
+      //전문분야 질의값
+      var cate_vals = [];
+      for(var i=0; i < $scope.filter_obj.category_list.length; i++){
+        if($scope.filter_obj.category_list[i].checked === true){
+          cate_vals.push($scope.filter_obj.category_list[i].name);
+        }
+      }
+      search_sql.filter.and.push( { terms : { category : cate_vals } } );
+
+      //방식 질의값
+      var method_vals = [];
+      for(var i=0; i < $scope.filter_obj.method_list.length; i++){
+        if($scope.filter_obj.method_list[i].checked === true){
+          method_vals.push($scope.filter_obj.method_list[i].name);
+        }
+      }
+      search_sql.filter.and.push( { terms : { method : method_vals } } );
+
+      //지역 질의값. 전체인 경우 검색 옵션 넣지 않음.
+      if($scope.filter_obj.location !== "전체"){
+        search_sql.filter.and.push( { terms : { location : [ $scope.filter_obj.location_list[0], $scope.filter_obj.location ] } } );
+      }
+
+      //가격 범위 질의값
+      search_sql.filter.and.push( { range : { method_price_min : { lte : $scope.filter_obj.method_price_max } } } );
+      search_sql.filter.and.push( { range : { method_price_max : { gte : $scope.filter_obj.method_price_min } } } );
+
+      if($scope.filter_obj.searchword.length > 0){
+        var query_obj = {
+          match : {
+            _all : $scope.filter_obj.searchword
+          }
+        }
+        search_sql.query = query_obj;
+      }
+      //console.log(JSON.stringify(search_sql));
+      //console.log($scope.filter_obj);
+      req_data.emit = "expertList";
+      req_data.query = search_sql;
+      socket.emit('getHits',req_data);
+    }
+  }
+
+  //전문가 목록 화면에서 사용되는 함수들.
+  $scope.expertList_func = {
+    doRefresh : function() {
+      //땡겨서 리프레쉬
+      //console.log(JSON.stringify(search_sql));
+      req_data.emit = "expertList";
+      req_data.query = search_sql;
+      socket.emit('getHits',req_data);
+      //socket.emit('getMetaData');
+      //socket.emit('getAggs',maxPrice_req);
+      $scope.$broadcast('scroll.refreshComplete');
+    },
+    filterShow : function() {
+      //검색 모달 오픈.
+      $scope.searchModal.show();
+    },
+    jjim : function(){
+      //찜 버튼 눌렀을 때 이벤트 처리.
+    }
+  }
+
+  //소켓 이벤트.
+  //전문가 목록 호출.
   socket.on('expertList', function(data){
     //console.log(data);
     $scope.expertList = [];
@@ -135,38 +170,42 @@ ctrl.controller('expertListCtrl', function($scope, $http, socket, $ionicModal) {
     }
   });
 
+  //메타데이터 호출
   socket.on('metaData', function(data){
-    $scope.metaData = data;
-    //검색용 obj 에 카테고리 값 셋팅.
-    $scope.search_obj.category = data.category;
-    for(var i=0; i < data.category.length; i++){
-      $scope.search_obj.category[i].ischecked = true;
-    }
-    $scope.search_obj.location = data.location[1];
-    //console.log($scope.metaData);
+    //$scope.metaData = data;
+    //카테고리 값 설정.
+    $scope.filter_obj.category_list = data.category;
+    $scope.filter_obj.method_list = data.method;
+    $scope.filter_obj.location_list = data.location;
+    //console.log($scope.filter_obj);
+    $scope.filter_func.categoryCheckAll(true);
+    $scope.filter_func.methodCheckAll(true);
   });
 
-  //Max 가격값 가져오는 aggs 질의.
-  var max_price_sql = {
+  //Max 가격값 가져오는 aggs 질의. 검색 메뉴의 가격 최대값으로 셋팅.
+  var maxPrice_req = {
     index : "users",
     type : "user",
-    emit : "max_price",
+    emit : "maxPrice",
     query: {
       size: 0,
       aggs : {
         max_price : {
-          max : { field : "max_amount" }
+          max : { field : "method_price_max" }
         }
       }
     }
   }
-  socket.emit('getAggs',max_price_sql);
-  socket.on('max_price', function(data){
+  socket.on('maxPrice', function(data){
     //console.log(data);
-    $scope.search_obj.max_price_val = data.max_price.value;
-    $scope.search_obj.price_max = data.max_price.value;
-    $scope.search_obj.price_min = 0;
+    $scope.filter_obj.method_price_max_val = data.max_price.value;
+    $scope.filter_obj.method_price_max = data.max_price.value;
   });
+
+  //최초 데이터 호출.
+  socket.emit('getHits',req_data);
+  socket.emit('getMetaData');
+  socket.emit('getAggs',maxPrice_req);
 
   //검색 모달.
   $ionicModal.fromTemplateUrl('templates/expertFilter.html', {
@@ -174,85 +213,6 @@ ctrl.controller('expertListCtrl', function($scope, $http, socket, $ionicModal) {
   }).then(function(modal) {
     $scope.searchModal = modal;
   });
-
-  //검색 모달 숨김.
-  $scope.filterHide = function() {
-    $scope.searchModal.hide();
-  };
-
-  $scope.filterSearch = function() {
-    $scope.searchModal.hide();
-    //var cate_str = "";
-
-    var filter_arr = [];
-
-    // 회원가입 끝난 값만.
-    filter_arr.push( { term : { register_done : true } } );
-
-    //전문분야 질의값
-    var cate_vals = [];
-    for(var i=0; i < $scope.search_obj.category.length; i++){
-      if($scope.search_obj.category[i].ischecked === true){
-        cate_vals.push($scope.search_obj.category[i].name);
-      }
-    }
-    filter_arr.push( { terms : { category : cate_vals } } );
-
-    //방식 질의값
-    var price_vals = [];
-    if($scope.search_obj.price.phone === true){
-      price_vals.push("phone");
-    }
-    if($scope.search_obj.price.email === true){
-      price_vals.push("email");
-    }
-    if($scope.search_obj.price.message === true){
-      price_vals.push("message");
-    }
-    if($scope.search_obj.price.interview === true){
-      price_vals.push("interview");
-    }
-    filter_arr.push( { terms : { "price.enable_list" : price_vals } } );
-
-    //지역 질의값
-    var location_val = [ $scope.metaData.location[0], $scope.search_obj.location ];
-    filter_arr.push( { terms : { location : location_val } } );
-
-    //가격 범위 질의값
-    filter_arr.push( { range : { "price.min_amount" : { lte : $scope.search_obj.price_max } } } );
-    filter_arr.push( { range : { "price.max_amount" : { gte : $scope.search_obj.price_min } } } );
-
-    search_sql = {
-      filter : {
-        and : filter_arr
-      }
-    };
-
-    if($scope.search_obj.searchword !== ""){
-      var query_obj = {
-        match : {
-          _all : $scope.search_obj.searchword
-        }
-      }
-      search_sql.query = query_obj;
-    }
-    //console.log(JSON.stringify(search_sql));
-    //console.log($scope.search_obj);
-    //socket.emit('getExpertList',search_sql);
-    var req_data = {
-      index : "users",
-      type : "user",
-      emit: "expertList",
-      query : search_sql
-    }
-    socket.emit('getHits',req_data);
-
-  };
-
-  //검색 모달 오픈.
-  $scope.filterShow = function() {
-    $scope.searchModal.show();
-  };
 
 });
 // 전문가 목록 컨트롤러 끝 //

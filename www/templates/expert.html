@@ -62,11 +62,10 @@
           <strong>서비스 방법</strong>
         </div>
         <div class="col col-75">
-          <span ng-show="expert.price.phone_enable" style="color:gray;">| 전화</span>
-          <span ng-show="expert.price.email_enable" style="color:gray;">&nbsp;| 이메일</span>
-          <span ng-show="expert.price.message_enable" style="color:gray;">&nbsp;| 문자/메시지</span>
-          <span ng-show="expert.price.interview_enable" style="color:gray;">&nbsp;| 대면</span>
-          <span style="color:gray;">&nbsp;|</h4>
+          <span ng-repeat="method_name in expert.method track by $index" style="color:gray;">
+            <span ng-hide="$index===0">|</span>
+            {{method_name}}
+          </span>
         </div>
       </div>
 
@@ -103,43 +102,13 @@
       </div>
 
       <div class="list">
-        <div class="item" ng-show="expert.price.phone_enable">
+        <div ng-repeat="method in expert.method_list track by $index" class="item" ng-show="method.checked">
           <span>
-            <strong>전화</strong>
+            <strong>{{method.name}}</strong>
           </span>
           <span class="pull-right">
-            <strong>{{expert.price.phone_amount|currency:"&#8361; ":0}}</strong>
-            / 60분
-          </span>
-        </div>
-
-        <div class="item" ng-show="expert.price.email_enable">
-          <span>
-            <strong>이메일</strong>
-          </span>
-          <span class="pull-right">
-            <strong>{{expert.price.email_amount|currency:"&#8361; ":0}}</strong>
-            / 1회신
-          </span>
-        </div>
-
-        <div class="item" ng-show="expert.price.message_enable">
-          <span>
-            <strong>문자/메시지</strong>
-          </span>
-          <span class="pull-right">
-            <strong>{{expert.price.message_amount|currency:"&#8361; ":0}}</strong>
-            / 60분
-          </span>
-        </div>
-
-        <div class="item" ng-show="expert.price.interview_enable">
-          <span>
-            <strong>대면</strong>
-          </span>
-          <span class="pull-right">
-            <strong>{{expert.price.interview_amount|currency:"&#8361; ":0}}</strong>
-            / 60분
+            <strong>{{method.price|currency:"&#8361; ":0}}</strong>
+            / {{method.unit}}
           </span>
         </div>
       </div>

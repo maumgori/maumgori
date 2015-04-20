@@ -7,64 +7,20 @@
       </div>
       <div class="col" style="text-align:right;">
         <h4 style="margin-bottom:1px;">
-          <button class="button button-small button-energized" ng-click="search_obj.categoryCheckAll();">
-            <span ng-show="search_obj.categoryIsCheckedAll">전체 해제</span>
-            <span ng-hide="search_obj.categoryIsCheckedAll">전체 선택</span>
+          <button class="button button-small button-energized" ng-click="filter_func.categoryCheckAll(!filter_func.categoryCheckedAll);">
+            <span ng-show="filter_func.categoryCheckedAll">전체 해제</span>
+            <span ng-hide="filter_func.categoryCheckedAll">전체 선택</span>
           </button>
         </h4>
       </div>
     </div>
     <div class="row">
       <div class="col">
-        <div class="col-xs-4 col-md-3" style="padding:5px;" ng-repeat="category in search_obj.category">
-          <button ng-class="{'button-outline' : !category.ischecked}" class="button button-block button-energized" style="padding:3px; margin:0px; border-radius:10px;" ng-click="category.ischecked = !category.ischecked">
+        <div class="col-xs-4 col-md-3" style="padding:5px;" ng-repeat="category in filter_obj.category_list">
+          <button type="button" ng-class="{'button-outline' : !category.checked}" class="button button-block button-energized" style="padding:3px; margin:0px; border-radius:10px;" ng-click="category.checked = !category.checked">
             {{category.name}}
           </button>
         </div>
-      </div>
-    </div>
-
-    <br>
-
-    <div class="row" style="padding:7px;">
-      <div class="col">
-        <h4 style="color:white;padding-top:15px;margin:0px;">서비스 방법</h4>
-      </div>
-      <div class="col text-right">
-        <h4 style="margin-bottom:1px;">
-          <button class="button button-small button-energized" ng-click="search_obj.priceCheckAll();">
-            <span ng-show="search_obj.priceIsCheckedAll">전체 해제</span>
-            <span ng-hide="search_obj.priceIsCheckedAll">전체 선택</span>
-          </button>
-        </h4>
-      </div>
-    </div>
-    <div class="row" style="padding:5px;">
-      <div class="col col-50">
-        <button ng-class="{'button-outline' : !search_obj.price.phone}" class="button button-block button-energized" style="padding:3px; margin:0px; border-radius:10px;" ng-click="search_obj.price.phone = !search_obj.price.phone">
-          <i class="icon ion-android-call"></i>
-          전화
-        </button>
-      </div>
-      <div class="col col-50">
-        <button ng-class="{'button-outline' : !search_obj.price.email}" class="button button-block button-energized" style="padding:3px; margin:0px; border-radius:10px;" ng-click="search_obj.price.email = !search_obj.price.email">
-          <i class="icon ion-android-mail"></i>
-          이메일
-        </button>
-      </div>
-    </div>
-    <div class="row" style="padding:5px;">
-      <div class="col col-50">
-        <button ng-class="{'button-outline' : !search_obj.price.message}" class="button button-block button-energized" style="padding:3px; margin:0px; border-radius:10px;" ng-click="search_obj.price.message = !search_obj.price.message">
-          <i class="icon ion-android-textsms"></i>
-          문자/메시지
-        </button>
-      </div>
-      <div class="col col-50">
-        <button ng-class="{'button-outline' : !search_obj.price.interview}" class="button button-block button-energized" style="padding:3px; margin:0px; border-radius:10px;" ng-click="search_obj.price.interview = !search_obj.price.interview">
-          <i class="icon ion-android-contacts"></i>
-          대면
-        </button>
       </div>
     </div>
 
@@ -77,13 +33,38 @@
     </div>
     <div class="row" style="padding: 0px 7px;">
       <div class="col">
-        <select class="form-control" style="background-color:transparent;color:white;" ng-model="search_obj.location">
-          <option ng-repeat="location in metaData.location" ng-hide="$first">{{location}}</option>
+        <select class="form-control" style="background-color:transparent;color:white;" ng-model="filter_obj.location">
+          <option value="전체">전체</option>
+          <option ng-repeat="location in filter_obj.location_list" ng-hide="$first">{{location}}</option>
         </select>
       </div>
     </div>
 
     <br>
+
+    <div class="row" style="padding:7px;">
+      <div class="col">
+        <h4 style="color:white;padding-top:15px;margin:0px;">서비스 방법</h4>
+      </div>
+      <div class="col text-right">
+        <h4 style="margin-bottom:1px;">
+          <button class="button button-small button-energized" ng-click="filter_func.methodCheckAll(!filter_func.methodCheckedAll);">
+            <span ng-show="filter_func.methodCheckedAll">전체 해제</span>
+            <span ng-hide="filter_func.methodCheckedAll">전체 선택</span>
+          </button>
+        </h4>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="col-xs-6 col-md-4" style="padding:5px;" ng-repeat="method in filter_obj.method_list">
+          <button type="button" ng-class="{'button-outline' : !method.checked}" class="button button-block button-energized"  style="padding:3px; margin:0px; border-radius:10px;" ng-click="method.checked = !method.checked">
+            <i class="{{method.icon}}"></i>
+            {{method.name}}
+          </button>
+        </div>
+      </div>
+    </div>
 
     <div class="row" style="padding:7px;">
       <div class="col">
@@ -94,8 +75,8 @@
       <div class="col">
         <div class="range range-energized">
           <span>최소</span>
-          <input type="range" min="0" max="{{search_obj.price_max}}" step="1000" ng-model="search_obj.price_min">
-          <span>{{search_obj.price_min|currency:"&#8361; ":0}}</span>
+          <input type="range" min="0" max="{{filter_obj.method_price_max}}" step="1000" ng-model="filter_obj.method_price_min">
+          <span>{{filter_obj.method_price_min|currency:"&#8361; ":0}}</span>
         </div>
       </div>
     </div>
@@ -103,8 +84,8 @@
       <div class="col">
         <div class="range range-energized">
           <span>최대</span>
-          <input type="range" min="{{search_obj.price_min}}" max="{{search_obj.max_price_val}}" step="1000" ng-model="search_obj.price_max">
-          <span>{{search_obj.price_max|currency:"&#8361; ":0}}</span>
+          <input type="range" min="{{filter_obj.method_price_min}}" max="{{filter_obj.method_price_max_val}}" step="1000" ng-model="filter_obj.method_price_max">
+          <span>{{filter_obj.method_price_max|currency:"&#8361; ":0}}</span>
         </div>
       </div>
     </div>
@@ -120,7 +101,7 @@
       <div class="col">
         <div class="list list-inset" style="margin-top:3px;background-color: transparent;">
           <label class="item item-input" style="background-color: transparent;">
-            <input type="text" placeholder="검색어" style="color: white;" ng-model="search_obj.searchword">
+            <input type="text" placeholder="검색어" style="color: white;" ng-model="filter_obj.searchword">
           </label>
         </div>
       </div>
@@ -130,10 +111,10 @@
 
     <div class="row" style="padding:7px;">
       <div class="col">
-        <button type="button" class="button button-assertive btn-block" ng-click="filterHide()">취소</button>
+        <button type="button" class="button button-assertive btn-block" ng-click="filter_func.filterHide()">취소</button>
       </div>
       <div class="col">
-        <button type="button" class="button button-balanced btn-block" ng-click="filterSearch()">확인</button>
+        <button type="button" class="button button-balanced btn-block" ng-click="filter_func.filterSearch()">확인</button>
       </div>
     </div>
 
