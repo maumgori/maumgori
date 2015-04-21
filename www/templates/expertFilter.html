@@ -40,6 +40,7 @@
     <div class="row" style="padding: 0px 7px;">
       <div class="col">
         <select class="form-control" style="background-color:transparent;color:white;" ng-model="filter_obj.location">
+          <option value="전체">전체</option>
           <option ng-repeat="location in filter_obj.location_list">{{location}}</option>
         </select>
       </div>

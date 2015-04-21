@@ -60,7 +60,7 @@ ctrl.controller('expertListCtrl', function($scope, $http, socket, $ionicModal) {
   $scope.filter_obj = {
     category_list : [],
     location_list : [],
-    location : "전국",
+    location : "전체",
     location_all : true,
     method_list : [],
     method_price_max : 0,
