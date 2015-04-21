@@ -30,12 +30,17 @@
       <div class="col">
         <h4 style="color:white;padding-top:15px;margin:0px;">지역</h4>
       </div>
+      <div class="col" style="text-align:right;">
+        <label class="checkbox" style="margin:0px;">
+          <input type="checkbox" ng-model="filter_obj.location_all">
+          <div style="padding-left:15px;margin-top:5px;">전국 포함</div>
+        </label>
+      </div>
     </div>
     <div class="row" style="padding: 0px 7px;">
       <div class="col">
         <select class="form-control" style="background-color:transparent;color:white;" ng-model="filter_obj.location">
-          <option value="전체">전체</option>
-          <option ng-repeat="location in filter_obj.location_list" ng-hide="$first">{{location}}</option>
+          <option ng-repeat="location in filter_obj.location_list">{{location}}</option>
         </select>
       </div>
     </div>

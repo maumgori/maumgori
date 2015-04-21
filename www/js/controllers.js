@@ -60,7 +60,8 @@ ctrl.controller('expertListCtrl', function($scope, $http, socket, $ionicModal) {
   $scope.filter_obj = {
     category_list : [],
     location_list : [],
-    location : "전체",
+    location : "전국",
+    location_all : true,
     method_list : [],
     method_price_max : 0,
     method_price_min : 0,
@@ -115,7 +116,11 @@ ctrl.controller('expertListCtrl', function($scope, $http, socket, $ionicModal) {
 
       //지역 질의값. 전체인 경우 검색 옵션 넣지 않음.
       if($scope.filter_obj.location !== "전체"){
-        search_sql.filter.and.push( { terms : { location : [ $scope.filter_obj.location_list[0], $scope.filter_obj.location ] } } );
+        if($scope.filter_obj.location_all){
+          search_sql.filter.and.push( { terms : { location : [ $scope.filter_obj.location_list[0], $scope.filter_obj.location ] } } );
+        } else {
+          search_sql.filter.and.push( { term : { location : $scope.filter_obj.location } } );
+        }
       }
 
       //가격 범위 질의값
