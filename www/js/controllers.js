@@ -1,29 +1,80 @@
 var ctrl = angular.module('starter.controllers', ['services']);
 
-ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
-  // Form data for the login modal
-  $scope.loginData = {};
+// 로그인 및 기타 컨트롤러.
+ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, socket) {
+  $scope.configObj = config_obj;
 
-  // Create the login modal that we will use later
+  // 회원가입/로그인에 사용되는 객체.
+  $scope.user_obj = {
+    email: "",
+    passwd: "",
+    passwd_re: "",
+    passwd_enc: "",
+    name: "",
+    nicname: "",
+    gender: "male",
+    birthday: new Date(1990, 0, 1),
+    phone: ""
+  };
+  // 회원가입/로그인에 사용되는 함수 모음.
+  $scope.login_func = {
+    signingin: false,
+    loggedin: false,
+    login: function(){
+
+    },
+    signin: function(){
+      var signin_data = {
+        index : "users",
+        type : "user",
+        emit: "userSigninRes",
+        user_obj : $scope.user_obj
+      }
+      socket.emit('userSignin',signin_data);
+    }
+  };
+
+  //사용자 저장 후 처리.
+  socket.on('userSigninRes',function(data){
+    toastr.success('정상적으로 회원가입이 완료되었습니다.', '저장 완료');
+    /*
+    append_user_obj(data);
+    if($scope.user_obj.signin_step === ($scope.user_obj.signin_step_text.length-1)){
+      //마지막 단계인 경우. login_id, passwd 임시저장 했으면 로그인 진행.
+      if($scope.user_func.temp_id !== "" && $scope.user_func.temp_passwd !== ""){
+        $scope.login_obj.id = $scope.user_func.temp_id;
+        $scope.login_obj.passwd = $scope.user_func.temp_passwd;
+        $scope.user_func.login();
+      }
+      $('#signinModal').modal('hide');
+    } else {
+      $scope.user_obj.signin_step++;
+    }
+    */
+    //console.log(data);
+  });
+
+  // 로그인 모달 생성
   $ionicModal.fromTemplateUrl('templates/login.html', {
     scope: $scope
   }).then(function(modal) {
-    $scope.modal = modal;
+    $scope.loginModal = modal;
   });
 
-  // Triggered in the login modal to close it
+  // 로그인 모달 닫기.
   $scope.closeLogin = function() {
-    $scope.modal.hide();
+    $scope.loginModal.hide();
   };
 
-  // Open the login modal
+  // 로그인 모달 열기.
   $scope.login = function() {
-    $scope.modal.show();
+    $scope.loginModal.show();
   };
 
-  // Perform the login action when the user submits the login form
+  // 로그인 성공.
   $scope.doLogin = function() {
-    console.log('로그인 중', $scope.loginData);
+    //console.log('로그인 중', $scope.user_obj);
+    toastr.success('정상적으로 로그인 되었습니다.', '로그인 성공');
     // Simulate a login delay. Remove this and replace with your login
     // code if using a login system
     $timeout(function() {
@@ -34,8 +85,7 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 });
 
 // 전문가 목록 컨트롤러 시작 //
-ctrl.controller('expertListCtrl', function($scope, $http, socket, $ionicModal) {
-  $scope.configObj = config_obj;
+ctrl.controller('expertListCtrl', function($scope, $ionicModal, socket) {
 
   //검색 SQL 객체 초기값 설정. 회원가입 완료 된 건만 검색 - 공통 적용.
   // search_sql.filter.and.push(); 로 필터 추가.
@@ -49,8 +99,8 @@ ctrl.controller('expertListCtrl', function($scope, $http, socket, $ionicModal) {
 
   //검색 쿼리 저장하는 객체. 기본 값 셋팅.
   var req_data = {
-    index : "users",
-    type : "user",
+    index : "experts",
+    type : "expert",
     id : null,
     emit: "expertList",
     query : search_sql
@@ -189,8 +239,8 @@ ctrl.controller('expertListCtrl', function($scope, $http, socket, $ionicModal) {
 
   //Max 가격값 가져오는 aggs 질의. 검색 메뉴의 가격 최대값으로 셋팅.
   var maxPrice_req = {
-    index : "users",
-    type : "user",
+    index : "experts",
+    type : "expert",
     emit : "maxPrice",
     query: {
       size: 0,
@@ -224,7 +274,6 @@ ctrl.controller('expertListCtrl', function($scope, $http, socket, $ionicModal) {
 
 // 전문가 상세 컨트롤러 시작 //
 ctrl.controller('ExpertCtrl', function($scope, $stateParams, socket) {
-  $scope.configObj = config_obj;
   //console.log($stateParams.expertId); //id 가져옴.
   var search_sql = {
     filter : {
@@ -234,8 +283,8 @@ ctrl.controller('ExpertCtrl', function($scope, $stateParams, socket) {
   //console.log(JSON.stringify(search_sql));
 
   var req_data = {
-    index : "users",
-    type : "user",
+    index : "experts",
+    type : "expert",
     id : $stateParams.expertId,
     element : "_source",
     emit: "expertDetail"

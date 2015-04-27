@@ -6,27 +6,83 @@
     </div>
   </ion-header-bar>
   <ion-content>
-    <form ng-submit="doLogin()">
-      <div class="list">
+    <div class="list">
+      <label class="item item-input">
+        <span class="input-label">
+          아이디
+          <i class="icon ion-checkmark-circled positive" ng-show="user_obj.email"></i>
+          <i class="icon ion-close-circled assertive" ng-show="!user_obj.email && user_obj.email!==''"></i>
+        </span>
+        <input type="email" ng-model="user_obj.email" placeholder="아이디 (이메일 형식)">
+      </label>
+      <label class="item item-input">
+        <span class="input-label">
+          패스워드
+          <i class="icon ion-checkmark-circled positive" ng-show="user_obj.passwd.length >= 6"></i>
+          <i class="icon ion-close-circled assertive" ng-show="user_obj.passwd.length < 6 && user_obj.passwd!==''"></i>
+        </span>
+        <input type="password" ng-model="user_obj.passwd" placeholder="패스워드 (6자 이상)">
+      </label>
+      <div ng-show="login_func.signingin">
         <label class="item item-input">
-          <span class="input-label">아이디</span>
-          <input type="text" ng-model="loginData.username">
+          <span class="input-label">
+            <span style="font-size:0.8em;">패스워드 확인 </span>
+            <i class="icon ion-checkmark-circled positive" ng-show="user_obj.passwd_re !== '' && user_obj.passwd === user_obj.passwd_re"></i>
+            <i class="icon ion-close-circled assertive" ng-show="user_obj.passwd !== user_obj.passwd_re"></i>
+          </span>
+          <input type="password" ng-model="user_obj.passwd_re" placeholder="패스워드 확인">
         </label>
         <label class="item item-input">
-          <span class="input-label">패스워드</span>
-          <input type="password" ng-model="loginData.password">
+          <span class="input-label">
+            이름
+            <i class="icon ion-checkmark-circled positive" ng-show="user_obj.name"></i>
+          </span>
+          <input type="text" ng-model="user_obj.name" placeholder="이름">
         </label>
-        <label class="item">
-          <div class="row">
-            <div class="col col-50">
-              <button class="button button-block button-positive" type="submit">로그인</button>
-            </div>
-            <div class="col col-50">
-              <button class="button button-block button-balanced" type="button">회원가입</button>
-            </div>
-          </div>
+        <label class="item item-input">
+          <span class="input-label">
+            닉네임
+            <i class="icon ion-checkmark-circled positive" ng-show="user_obj.nicname"></i>
+          </span>
+          <input type="text" ng-model="user_obj.nicname" placeholder="닉네임">
+        </label>
+        <label class="item item-input item-select">
+          <span class="input-label">성별</span>
+          <select ng-model="user_obj.gender">
+            <option value="male">남성</option>
+            <option value="female">여성</option>
+        </select>
+        </label>
+        <label class="item item-input">
+          <span class="input-label">생년월일</span>
+          <input type="date" ng-model="user_obj.birthday">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">전화번호</span>
+          <input type="number" ng-model="user_obj.phone" placeholder="전화번호">
         </label>
       </div>
-    </form>
+      <!-- button 이 label 안에 있으면 ng-click 이벤트가 먹지 않음. div 안에 넣을것. -->
+      <div class="item">
+        <div class="row" ng-hide="login_func.signingin">
+          <div class="col col-50">
+            <button class="button button-block button-positive" type="button" ng-click="login_func.login()">로그인</button>
+          </div>
+          <div class="col col-50">
+            <button class="button button-block button-balanced" type="button" ng-click="login_func.signingin=true">회원가입</button>
+          </div>
+        </div>
+        <div class="row" ng-show="login_func.signingin">
+          <div class="col col-50">
+            <button class="button button-block button-assertive" type="button" ng-click="login_func.signingin=false">취소</button>
+          </div>
+          <div class="col col-50">
+            <button class="button button-block button-balanced" type="button" ng-disabled="!user_obj.email || user_obj.passwd.length < 6 || user_obj.passwd !== user_obj.passwd_re || !user_obj.name || !user_obj.nicname " ng-click="login_func.signin()">
+              회원가입
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </ion-content>
 </ion-modal-view>
