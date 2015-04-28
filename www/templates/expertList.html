@@ -41,7 +41,7 @@
               </div>
               <div class="row" style="padding:2px;">
                 <!-- onclick="return false" 해 줘야 위에서 지정한 a 태그 이벤트 무시됨. -->
-                <button type="button" class="button-outline button button-energized button-small button-block" ng-click="expertList_func.jjim();" onclick="return false;">
+                <button type="button" class="button button-energized button-small button-block" ng-disabled="!login_func.loggedin" ng-class="{'button-outline':user_obj.jjim.indexOf(expert.id)<0}" ng-click="login_func.jjim(expert.id);" onclick="return false;">
                   <i class="icon ion-android-favorite-outline"></i> 찜
                 </button>
               </div>
@@ -82,8 +82,7 @@
 
               <div class="row card-cont">
                 <h4 ng-repeat="method_name in expert.method track by $index" style="color:gray;">
-                  <span ng-hide="$index===0">&nbsp;|&nbsp;</span>
-                  {{method_name}}
+                  <span ng-hide="$index===0">&nbsp;|&nbsp;</span>{{method_name}}
                 </h4>
               </div>
 

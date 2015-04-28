@@ -6,6 +6,7 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, socket) {
 
   // 회원가입/로그인에 사용되는 객체.
   $scope.user_obj = {
+    id: "",
     email: "",
     passwd: "",
     passwd_re: "",
@@ -14,44 +15,123 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, socket) {
     nicname: "",
     gender: "male",
     birthday: new Date(1990, 0, 1),
-    phone: ""
+    phone: "",
+    register_date : null,
+    jjim : []
   };
   // 회원가입/로그인에 사용되는 함수 모음.
   $scope.login_func = {
     signingin: false,
     loggedin: false,
     login: function(){
-
+      var login_data = {
+        index : "users",
+        type : "user",
+        id : $scope.user_obj.id,
+        passwd : $scope.user_obj.passwd,
+        emit: "appUserLoginRes",
+        user_obj : $scope.user_obj
+      }
+      socket.emit('login',login_data);
+      //웹 화면 로그인 모듈 재사용.
     },
     signin: function(){
+      var id_check_obj = {
+        index : "users",
+        type : "user",
+        id : $scope.user_obj.id,
+        element : "found",
+        emit : "appUserIdExusts"
+      }
+      socket.emit('getDocument',id_check_obj);
+    },
+    jjim: function(expert_id){
+      //찜 버튼 눌렀을 때 이벤트 처리.
+      //더 먼저 선언된 컨트롤러의 함수는 이후 컨트롤러도 불러올 수 있는듯.
+      var exIdIndex = $scope.user_obj.jjim.indexOf(expert_id);
+      if(exIdIndex > -1){
+        $scope.user_obj.jjim.splice(exIdIndex,1);
+      } else {
+        $scope.user_obj.jjim.push(expert_id);
+      }
+      //console.log($scope.user_obj.jjim);
       var signin_data = {
         index : "users",
         type : "user",
-        emit: "userSigninRes",
+        emit: "appUserUpdate",
         user_obj : $scope.user_obj
       }
-      socket.emit('userSignin',signin_data);
+      socket.emit('appUserSignin',signin_data);
     }
   };
 
-  //사용자 저장 후 처리.
-  socket.on('userSigninRes',function(data){
-    toastr.success('정상적으로 회원가입이 완료되었습니다.', '저장 완료');
-    /*
-    append_user_obj(data);
-    if($scope.user_obj.signin_step === ($scope.user_obj.signin_step_text.length-1)){
-      //마지막 단계인 경우. login_id, passwd 임시저장 했으면 로그인 진행.
-      if($scope.user_func.temp_id !== "" && $scope.user_func.temp_passwd !== ""){
-        $scope.login_obj.id = $scope.user_func.temp_id;
-        $scope.login_obj.passwd = $scope.user_func.temp_passwd;
-        $scope.user_func.login();
-      }
-      $('#signinModal').modal('hide');
+  //id 존재하는지 체크.
+  socket.on('appUserIdExusts',function(data){
+    if(data){
+      toastr.error('이미 사용중인 아이디입니다.', '회원가입 실패')
     } else {
-      $scope.user_obj.signin_step++;
+      var signin_data = {
+        index : "users",
+        type : "user",
+        emit: "appUserSigninRes",
+        user_obj : $scope.user_obj
+      }
+      socket.emit('appUserSignin',signin_data);
     }
-    */
-    //console.log(data);
+  });
+
+  //회원정보 업데이트. 토스트 안함.
+  socket.on('appUserUpdate',function(data){
+  });
+
+  //회원가입 후 처리.
+  socket.on('appUserSigninRes',function(data){
+    toastr.success('정상적으로 회원가입이 완료되었습니다.', '저장 완료');
+    $timeout(function() {
+      $scope.login_func.login();
+    }, 1000);
+  });
+
+  //로그인 후 처리
+  socket.on('appUserLoginRes',function(data){
+    if(!data.idExist){
+      toastr.error('존재하지 않는 아이디입니다.', '로그인 실패')
+    } else {
+      if(!data.correctPasswd){
+        toastr.error('패스워드가 일치하지 않습니다.', '로그인 실패');
+      } else {
+        //$scope.user_obj = data.user_obj;
+
+        var obj_keys = Object.keys(data.user_obj); // key Array 가져옴. ["signin_step","id","type","passwd", ...];
+        for(var i=0; i < obj_keys.length; i++){
+          if(obj_keys !== 'birthday' && obj_keys !== 'register_date'){
+            $scope.user_obj[obj_keys[i]] = data.user_obj[obj_keys[i]];
+          }
+        }
+        $scope.user_obj.passwd_enc = data.user_obj.passwd;
+        $scope.user_obj.passwd = "";
+        $scope.user_obj.passwd_re = "";
+        if($scope.user_obj.id !== ''){
+          $scope.login_func.loggedin = true;
+        }
+        $scope.user_obj.birthday = new Date(data.user_obj.birthday);
+        $scope.user_obj.register_date = new Date(data.user_obj.register_date);
+        //console.log($scope.user_obj);
+        $scope.loginModal.hide();
+
+        /*
+        //console.log(data.user_obj);
+        append_user_obj(data.user_obj);
+        $scope.user_obj.is_loggedin = true;
+        if($scope.user_obj.signin_step < ($scope.user_obj.signin_step_text.length - 1)){
+          $scope.user_obj.signin_step++;
+        }
+        //console.log($scope.login_obj);
+        //login_obj 세션에 저장.
+        sessionStorage["maum_login_obj"] = JSON.stringify($scope.login_obj);
+        */
+      }
+    }
   });
 
   // 로그인 모달 생성
@@ -208,9 +288,6 @@ ctrl.controller('expertListCtrl', function($scope, $ionicModal, socket) {
     filterShow : function() {
       //검색 모달 오픈.
       $scope.searchModal.show();
-    },
-    jjim : function(){
-      //찜 버튼 눌렀을 때 이벤트 처리.
     }
   }
 
@@ -297,7 +374,7 @@ ctrl.controller('ExpertCtrl', function($scope, $stateParams, socket) {
     //console.log(data);
     $scope.expert = data;
 
-    //HTML값 직접 가져와서 하려고 했더니 안되서 부득이하게 html 값 만들어 입력하는 방식으로 함.
+    //타이틀 배경 : HTML값 직접 가져와서 하려고 했더니 안되서 부득이하게 html 값 만들어 입력하는 방식으로 함.
     var profile_div = $('#profile_div');
     var p_width = profile_div.width();
     var profile_style_val = '';

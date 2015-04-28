@@ -144,14 +144,15 @@
 
   <ion-footer-bar align-title="left" class="bar-light">
     <div class="row">
-      <div class="col button button-assertive">
-        <i class="icon ion-star"></i>
-        찜하기
-      </div>
-      <div class="col button button-positive">
+      <button class="col button button-energized" ng-class="{'button-outline':user_obj.jjim.indexOf(expert.id)<0}" ng-disabled="!login_func.loggedin" ng-click="login_func.jjim(expert.id)">
+        <i class="icon ion-android-favorite-outline"></i>
+        <span ng-show="user_obj.jjim.indexOf(expert.id)>-1"> 찜 취소</span>
+        <span ng-hide="user_obj.jjim.indexOf(expert.id)>-1"> 찜하기</span>
+      </button>
+      <button class="col button button-positive" ng-disabled="!login_func.loggedin">
         <i class="icon ion-edit"></i>
         문의하기
-      </div>
+      </button>
     </div>
   </ion-footer-bar>
 

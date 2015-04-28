@@ -10,10 +10,10 @@
       <label class="item item-input">
         <span class="input-label">
           아이디
-          <i class="icon ion-checkmark-circled positive" ng-show="user_obj.email"></i>
-          <i class="icon ion-close-circled assertive" ng-show="!user_obj.email && user_obj.email!==''"></i>
+          <i class="icon ion-checkmark-circled positive" ng-show="user_obj.id.length >= 4"></i>
+          <i class="icon ion-close-circled assertive" ng-show="user_obj.id.length < 4 && user_obj.id !== ''"></i>
         </span>
-        <input type="email" ng-model="user_obj.email" placeholder="아이디 (이메일 형식)">
+        <input type="text" ng-model="user_obj.id" placeholder="아이디 (4자 이상)">
       </label>
       <label class="item item-input">
         <span class="input-label">
@@ -58,6 +58,14 @@
           <input type="date" ng-model="user_obj.birthday">
         </label>
         <label class="item item-input">
+          <span class="input-label">
+            이메일
+            <i class="icon ion-checkmark-circled positive" ng-show="user_obj.email"></i>
+            <i class="icon ion-close-circled assertive" ng-show="!user_obj.email && user_obj.email!==''"></i>
+          </span>
+          <input type="email" ng-model="user_obj.email" placeholder="이메일">
+        </label>
+        <label class="item item-input">
           <span class="input-label">전화번호</span>
           <input type="number" ng-model="user_obj.phone" placeholder="전화번호">
         </label>
@@ -66,7 +74,7 @@
       <div class="item">
         <div class="row" ng-hide="login_func.signingin">
           <div class="col col-50">
-            <button class="button button-block button-positive" type="button" ng-click="login_func.login()">로그인</button>
+            <button class="button button-block button-positive" type="button" ng-disabled="!user_obj.id || user_obj.passwd.length < 6" ng-click="login_func.login()">로그인</button>
           </div>
           <div class="col col-50">
             <button class="button button-block button-balanced" type="button" ng-click="login_func.signingin=true">회원가입</button>
@@ -77,7 +85,7 @@
             <button class="button button-block button-assertive" type="button" ng-click="login_func.signingin=false">취소</button>
           </div>
           <div class="col col-50">
-            <button class="button button-block button-balanced" type="button" ng-disabled="!user_obj.email || user_obj.passwd.length < 6 || user_obj.passwd !== user_obj.passwd_re || !user_obj.name || !user_obj.nicname " ng-click="login_func.signin()">
+            <button class="button button-block button-balanced" type="button" ng-disabled="user_obj.id.length < 4 || !user_obj.email || user_obj.passwd.length < 6 || user_obj.passwd !== user_obj.passwd_re || !user_obj.name || !user_obj.nicname " ng-click="login_func.signin()">
               회원가입
             </button>
           </div>
