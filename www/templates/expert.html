@@ -4,24 +4,27 @@
   </ion-nav-title>
 
   <ion-content>
-    <!-- 프로필 이미지 & 텍스트 -->
+    <!-- 프로필 이미지 & 텍스트 시작 -->
     <div class="row" id="profile_div" style="{{profile_style}}">
       <div style="position:absolute; {{expert.proflie_txt_location}}:0; padding:12px;">
         <h4 ng-class="{'text-stroke-white':!expert.proflie_txt_color,'text-stroke-black':expert.proflie_txt_color}">{{expert.profile_title}}</h4>
         <span ng-class="{'text-stroke-white':!expert.proflie_txt_color,'text-stroke-black':expert.proflie_txt_color}" style="white-space: pre;">{{expert.profile_text}}</span>
       </div>
     </div>
+    <!-- 프로필 이미지 & 텍스트 끝 -->
 
-    <!-- 정보, 가격, 평점 버튼 -->
-    <div class="row" style="padding:0px;margin:0px;">
-      <div class="col" style="padding:0px;margin:0px;">
-        <button type="button" ng-class="{'button-outline':tab_val!=='info'}" ng-click="tab_val='info'" class="button button-block button-stable" style="margin:0px;">정보</button>
+    <div class="tabs tabs-top tabs-icon-left tabs-striped" style="position:relative;top:0px;">
+      <div class="tab-item" ng-class="{'active':tab_val==='info'}" ng-click="tab_val='info'" style="font-size:11pt;">
+        <i class="icon ion-information-circled"></i>
+        정보
       </div>
-      <div class="col" style="padding:0px;margin:0px;">
-        <button type="button" ng-class="{'button-outline':tab_val!=='price'}" ng-click="tab_val='price'" class="button button-block button-stable" style="margin:0px;">가격</button>
+      <div class="tab-item" ng-class="{'active':tab_val==='price'}" ng-click="tab_val='price'" style="font-size:11pt;">
+        <i class="icon ion-social-usd"></i>
+        가격
       </div>
-      <div class="col" style="padding:0px;margin:0px;">
-        <button type="button" ng-class="{'button-outline':tab_val!=='score'}" ng-click="tab_val='score'" class="button button-block button-stable" style="margin:0px;">평점</button>
+      <div class="tab-item" ng-class="{'active':tab_val==='score'}" ng-click="tab_val='score'" style="font-size:11pt;">
+        <i class="icon ion-heart"></i>
+        평점
       </div>
     </div>
 
