@@ -114,17 +114,22 @@
     </div>
 
     <br>
-
-    <div class="row" style="padding:7px;">
-      <div class="col">
-        <button type="button" class="button button-assertive btn-block" ng-click="filter_func.filterHide()">취소</button>
-      </div>
-      <div class="col">
-        <button type="button" class="button button-balanced btn-block" ng-click="filter_func.filterSearch()">확인</button>
-      </div>
-    </div>
-
-    <br>
-
   </ion-content>
+
+  <ion-header-bar class="bar bar-header bar-dark">
+    <div class="row">
+      <button type="button" class="col button button-assertive" ng-click="filter_func.filterHide()">취소</button>
+      <button type="button" class="col button button-balanced" ng-click="filter_func.filterSearch()">확인</button>
+    </div>
+  </ion-header-bar>
+
+  <!--
+  <ion-footer-bar align-title="left" class="bar bar-footer bar-dark">
+    <div class="row">
+      <button type="button" class="col button button-assertive" ng-click="filter_func.filterHide()">취소</button>
+      <button type="button" class="col button button-balanced" ng-click="filter_func.filterSearch()">확인</button>
+    </div>
+  </ion-footer-bar>
+  -->
+
 </ion-modal-view>

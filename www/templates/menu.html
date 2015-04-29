@@ -33,11 +33,13 @@
     </ion-header-bar>
     <ion-content style="background-color:#002349;">
       <ion-list>
-
-        <ion-item nav-clear menu-close ng-click="login()" class="item item-royal">
+        <ion-item ng-hide="login_func.loggedin" nav-clear menu-close ng-click="login_func.openLogin()" class="item item-balanced">
           로그인 / 회원가입
         </ion-item>
-        <ion-item nav-clear menu-close href="#/app/mypage" class="item item-royal">
+        <ion-item ng-show="login_func.loggedin" nav-clear menu-close ng-click="login_func.closeLogin()" class="item item-assertive">
+          로그아웃
+        </ion-item>
+        <ion-item ng-show="login_func.loggedin" nav-clear menu-close href="#/app/mypage" class="item item-royal">
           마이페이지
         </ion-item>
         <ion-item nav-clear menu-close href="#/app/expert" class="item item-royal">

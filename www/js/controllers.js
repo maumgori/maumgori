@@ -1,7 +1,7 @@
 var ctrl = angular.module('starter.controllers', ['services']);
 
 // 로그인 및 기타 컨트롤러.
-ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, socket) {
+ctrl.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $timeout, socket) {
   $scope.configObj = config_obj;
 
   // 회원가입/로그인에 사용되는 객체.
@@ -14,15 +14,48 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, socket) {
     name: "",
     nicname: "",
     gender: "male",
-    birthday: new Date(1990, 0, 1),
+    birthday: null,
     phone: "",
     register_date : null,
     jjim : []
   };
+
+  //초기값 임시 저장. 날짜 형식은 stringify => parse 오류남.
+  var user_obj_temp = JSON.stringify($scope.user_obj);
+  $scope.user_obj.birthday = new Date(1990, 0, 1);
+
   // 회원가입/로그인에 사용되는 함수 모음.
   $scope.login_func = {
     signingin: false,
     loggedin: false,
+    openLogin: function(){
+      $scope.loginModal.show();
+    },
+    closeLogin : function() {
+      var confirmPopup = $ionicPopup.show({
+        title: '로그아웃 하시겠습니까?',
+        buttons: [
+          {
+            text: '취소',
+            type: 'button-stable'
+          },
+          {
+            text: '확인',
+            type: 'button-positive',
+            onTap: function(e) {
+              $scope.user_obj = JSON.parse(user_obj_temp);
+              $scope.user_obj.birthday = new Date(1990, 0, 1);
+              $scope.login_func.signingin = false;
+              $scope.login_func.loggedin = false;
+              delete sessionStorage["maum_app_user_obj"];
+            }
+          }
+        ]
+      });
+    },
+    hideLogin: function(){
+      $scope.loginModal.hide();
+    },
     login: function(){
       var login_data = {
         index : "users",
@@ -101,6 +134,7 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, socket) {
         toastr.error('패스워드가 일치하지 않습니다.', '로그인 실패');
       } else {
         //$scope.user_obj = data.user_obj;
+        sessionStorage["maum_app_user_obj"] = JSON.stringify($scope.user_obj);
 
         var obj_keys = Object.keys(data.user_obj); // key Array 가져옴. ["signin_step","id","type","passwd", ...];
         for(var i=0; i < obj_keys.length; i++){
@@ -118,21 +152,18 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, socket) {
         $scope.user_obj.register_date = new Date(data.user_obj.register_date);
         //console.log($scope.user_obj);
         $scope.loginModal.hide();
-
-        /*
-        //console.log(data.user_obj);
-        append_user_obj(data.user_obj);
-        $scope.user_obj.is_loggedin = true;
-        if($scope.user_obj.signin_step < ($scope.user_obj.signin_step_text.length - 1)){
-          $scope.user_obj.signin_step++;
-        }
-        //console.log($scope.login_obj);
-        //login_obj 세션에 저장.
-        sessionStorage["maum_login_obj"] = JSON.stringify($scope.login_obj);
-        */
       }
     }
   });
+
+  //세션 체크해서 로그인.
+  if(sessionStorage["maum_app_user_obj"]){
+    //console.log(sessionStorage["maum_login_obj"]);
+    var app_user_session = JSON.parse(sessionStorage["maum_app_user_obj"]);
+    $scope.user_obj.id = app_user_session.id;
+    $scope.user_obj.passwd = app_user_session.passwd;
+    $scope.login_func.login();
+  }
 
   // 로그인 모달 생성
   $ionicModal.fromTemplateUrl('templates/login.html', {
@@ -140,27 +171,6 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $timeout, socket) {
   }).then(function(modal) {
     $scope.loginModal = modal;
   });
-
-  // 로그인 모달 닫기.
-  $scope.closeLogin = function() {
-    $scope.loginModal.hide();
-  };
-
-  // 로그인 모달 열기.
-  $scope.login = function() {
-    $scope.loginModal.show();
-  };
-
-  // 로그인 성공.
-  $scope.doLogin = function() {
-    //console.log('로그인 중', $scope.user_obj);
-    toastr.success('정상적으로 로그인 되었습니다.', '로그인 성공');
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
-  };
 
 });
 

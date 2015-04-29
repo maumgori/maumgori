@@ -25,8 +25,8 @@
     </ion-list>
 
     <ion-list>
-      <div  ng-repeat="expert in expertList" class="col-xs-12 col-sm-6 list" style="padding:0px;margin:0px;">
-        <ion-item class="card expert-list-item">
+      <div ng-repeat="expert in expertList" class="col-xs-12 col-sm-6 list" style="padding:0px;margin:0px;">
+        <ion-item class="card expert-list-item" style="margin:3px 5px;">
           <div class="row">
             <div class="row">
               <span class="cate-tag" ng-repeat="cate in expert.category_list" ng-show="cate.checked" ng-style="cate.style">
@@ -41,7 +41,7 @@
               </div>
               <div class="row" style="padding:2px;">
                 <!-- onclick="return false" 해 줘야 위에서 지정한 a 태그 이벤트 무시됨. -->
-                <button type="button" class="button button-energized button-small button-block" ng-disabled="!login_func.loggedin" ng-class="{'button-outline':user_obj.jjim.indexOf(expert.id)<0}" ng-click="login_func.jjim(expert.id);" onclick="return false;">
+                <button type="button" class="button button-energized button-small button-block" ng-show="login_func.loggedin" ng-class="{'button-outline':user_obj.jjim.indexOf(expert.id)<0}" ng-click="login_func.jjim(expert.id);" onclick="return false;">
                   <i class="icon ion-android-favorite-outline"></i> 찜
                 </button>
               </div>
