@@ -17,7 +17,8 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $timeout, 
     birthday: null,
     phone: "",
     register_date : null,
-    jjim : []
+    jjim: [],
+    messages: []
   };
 
   //초기값 임시 저장. 날짜 형식은 stringify => parse 오류남.
@@ -170,6 +171,49 @@ ctrl.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $timeout, 
     scope: $scope
   }).then(function(modal) {
     $scope.loginModal = modal;
+  });
+
+  //socket.on 은 상위 컨트롤에서 해야 함. 전문가상세에서 하면 계속 중복 실행됨.
+  socket.on('expertDetail', function(data){
+    //console.log(data);
+    $scope.expert = data;
+    //타이틀 배경 : HTML값 직접 가져와서 하려고 했더니 안되서 부득이하게 html 값 만들어 입력하는 방식으로 함.
+    var profile_div = $('#profile_div');
+    var p_width = profile_div.width();
+    var profile_style_val = '';
+    profile_style_val += 'padding:0px;';
+    profile_style_val += 'margin:0px;';
+    profile_style_val += 'position:relative;';
+    profile_style_val += 'width:100%;';
+    profile_style_val += 'height:'+(p_width/2)+'px;';
+    profile_style_val += 'background-size:100%;';
+    profile_style_val += "background-image:url('http://"+$scope.configObj.host+":"+$scope.configObj.port+$scope.expert.profile_bg_img+"');";
+    $scope.profile_style = profile_style_val;
+  });
+
+  socket.on('messageSent', function(data){
+    toastr.success('메시지가 송신되었습니다.', '메시지 송신 완료.');
+    var data_obj = JSON.parse(data);
+    var expert_id = data_obj['_type'];
+    expert_id = expert_id.replace('-'+$scope.user_obj.id,'');
+    //console.log(expert_id);
+    var exIdIndex = $scope.user_obj.messages.indexOf(expert_id);
+    if(exIdIndex > -1){
+      $scope.user_obj.messages.splice(exIdIndex,1);
+    }
+    $scope.user_obj.messages.push(expert_id);
+    //console.log($stateParams.expertId);
+    //console.log($scope.user_obj.messages);
+    //console.log($scope.user_obj);
+    //사용자 정보 업데이트.
+    var signin_data_message = {
+      index : "users",
+      type : "user",
+      emit: "appUserUpdate",
+      user_obj : $scope.user_obj
+    }
+    socket.emit('appUserSignin',signin_data_message);
+
   });
 
 });
@@ -360,7 +404,7 @@ ctrl.controller('expertListCtrl', function($scope, $ionicModal, socket) {
 // 전문가 목록 컨트롤러 끝 //
 
 // 전문가 상세 컨트롤러 시작 //
-ctrl.controller('ExpertCtrl', function($scope, $stateParams, socket) {
+ctrl.controller('ExpertCtrl', function($scope, $stateParams, socket, $ionicPopup) {
   //console.log($stateParams.expertId); //id 가져옴.
   var search_sql = {
     filter : {
@@ -380,26 +424,65 @@ ctrl.controller('ExpertCtrl', function($scope, $stateParams, socket) {
   //socket.emit('getExpertList',search_sql);
   //socket.emit('getMetaData');
 
-  socket.on('expertDetail', function(data){
-    //console.log(data);
-    $scope.expert = data;
-
-    //타이틀 배경 : HTML값 직접 가져와서 하려고 했더니 안되서 부득이하게 html 값 만들어 입력하는 방식으로 함.
-    var profile_div = $('#profile_div');
-    var p_width = profile_div.width();
-    var profile_style_val = '';
-    profile_style_val += 'padding:0px;';
-    profile_style_val += 'margin:0px;';
-    profile_style_val += 'position:relative;';
-    profile_style_val += 'width:100%;';
-    profile_style_val += 'height:'+(p_width/2)+'px;';
-    profile_style_val += 'background-size:100%;';
-    profile_style_val += "background-image:url('http://"+$scope.configObj.host+":"+$scope.configObj.port+$scope.expert.profile_bg_img+"');";
-    $scope.profile_style = profile_style_val;
-
-  });
-
   $scope.tab_val="info";
+
+  $scope.message_obj = {
+    user_id: $scope.user_obj.id,
+    name: "비공개",
+    phone: "비공개",
+    nicname: $scope.user_obj.nicname,
+    user_sent: true,
+    send_time: null,
+    read_time: null,
+    message: ""
+  };
+
+  var message_template = "";
+  message_template += '<label class="checkbox col" style="margin-left:20px;"><input type="checkbox" ng-model="expertDetail_func.info_name"> <div style="padding-left:15px;margin-top:5px;">실명 공개</div></label>';
+  message_template += '<label class="checkbox col" style="margin-left:20px;"><input type="checkbox" ng-model="expertDetail_func.info_phone"> <div style="padding-left:15px;margin-top:5px;">전화번호 공개</div></label>';
+  message_template += '<textarea rows=6 ng-model="message_obj.message" placeholder="문의할 내용을 입력하세요."></textarea>';
+  $scope.expertDetail_func = {
+    info_name:true,
+    info_phone:true,
+    messageWrite: function(){
+      var messagePopup = $ionicPopup.show({
+        title: ' to. '+$scope.expert.name+' 전문가',
+        template: message_template,
+        scope: $scope,
+        buttons: [
+          {
+            text: '취소',
+            type: 'button-stable'
+          },
+          {
+            text: '전송',
+            type: 'button-positive',
+            onTap: function(e) {
+              if($scope.expertDetail_func.info_name){
+                $scope.message_obj.name =  $scope.user_obj.name;
+              } else {
+                $scope.message_obj.name =  "비공개";
+              }
+              if($scope.expertDetail_func.info_phone){
+                $scope.message_obj.phone =  $scope.user_obj.phone;
+              } else {
+                $scope.message_obj.phone =  "비공개";
+              }
+              $scope.message_obj.send_time = new Date();
+
+              var message_req_obj = {
+                index : "messages",
+                type : $stateParams.expertId+"-"+$scope.user_obj.id,
+                doc_data: $scope.message_obj,
+                emit: "messageSent"
+              }
+              socket.emit('insertDocument',message_req_obj);
+            }
+          }
+        ]
+      });
+    }
+  }
 
 });
 // 전문가 상세 컨트롤러 끝 //

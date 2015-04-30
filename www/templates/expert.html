@@ -142,7 +142,6 @@
       평점 탭
     </div>
     <!-- 평점 탭 끝 -->
-
   </ion-content>
 
   <ion-footer-bar align-title="left" class="bar-light">
@@ -152,7 +151,7 @@
         <span ng-show="user_obj.jjim.indexOf(expert.id)>-1"> 찜 취소</span>
         <span ng-hide="user_obj.jjim.indexOf(expert.id)>-1"> 찜하기</span>
       </button>
-      <button class="col button button-positive" ng-disabled="!login_func.loggedin">
+      <button class="col button button-positive" ng-disabled="!login_func.loggedin" ng-click="expertDetail_func.messageWrite()">
         <i class="icon ion-edit"></i>
         문의하기
       </button>
